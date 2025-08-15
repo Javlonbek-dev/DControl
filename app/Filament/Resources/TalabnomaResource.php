@@ -13,119 +13,108 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\{Section, TextInput, Select, DateTimePicker, RichEditor};
+
 
 class TalabnomaResource extends Resource
 {
     protected static ?string $model = Talabnoma::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\Textarea::make('korxona_nomi')
-                    ->required()
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('inn')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('faoliyat_turi')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('hudud_is')
-                    ->numeric(),
-                Forms\Components\TextInput::make('tuman')
-                    ->maxLength(255),
-                Forms\Components\DateTimePicker::make('start_tekshiruv'),
-                Forms\Components\DateTimePicker::make('end_tekshiruv'),
-                Forms\Components\DateTimePicker::make('yubroilgan_vaqti'),
-                Forms\Components\TextInput::make('talabnoma_raq')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('jarima_sum')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('jarima_foizi')
-                    ->numeric(),
-                Forms\Components\TextInput::make('tekshiruv_holati')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('tulangan_sum')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('tulangan_foizi')
-                    ->numeric(),
-                Forms\Components\DateTimePicker::make('end_date'),
-                Forms\Components\Textarea::make('huquqbuzarlik_mazmuni')
-                    ->columnSpanFull(),
-                Forms\Components\Textarea::make('qounun_moddasi')
-                    ->columnSpanFull(),
-                Forms\Components\Select::make('user_id')
-                    ->disabled()
-                    ->default(Filament::auth()->user()->name),
-            ]);
-    }
+        $isModerator = auth()->user()?->hasRole('moderator');
 
+        $userFields = [
+            TextInput::make('korxona_nomi')->required()->maxLength(65535),
+            TextInput::make('inn')->required()->maxLength(255),
+            TextInput::make('faoliyat_turi')->required()->maxLength(255),
+
+            // Modelda: public function hudud(){ return $this->belongsTo(Hudud::class); }
+            Select::make('hudud_id')->relationship('hudud', 'hudud_nomi')->required(),
+
+            TextInput::make('tuman')->maxLength(255),
+
+            // timestamp ustunlar uchun DateTimePicker qulayroq
+            DateTimePicker::make('start_tekshiruv'),
+            DateTimePicker::make('end_tekshiruv'),
+            DateTimePicker::make('yuborilgan_vaqti'),
+
+            TextInput::make('talabnoma_raq')->label('Talabnoma raqami')->maxLength(255),
+        ];
+
+        $moderatorFields = [
+            TextInput::make('jarima_sum')->numeric()->prefix('so‘m')
+                ->disabled(fn () => ! $isModerator)
+                ->dehydrated(fn () => $isModerator),
+
+            TextInput::make('jarima_foizi')->numeric()
+                ->disabled(fn () => ! $isModerator)
+                ->dehydrated(fn () => $isModerator),
+
+            Select::make('tekshiruv_holati')
+                ->options([
+                    'draft' => 'Draft',
+                    'yuborildi' => 'Yuborildi',
+                    'jarimalandi' => 'Jarimalandi',
+                    'yopildi' => 'Yopildi',
+                ])
+                ->required()
+                ->disabled(fn () => ! $isModerator)
+                ->dehydrated(fn () => $isModerator),
+
+            TextInput::make('tulangan_sum')->numeric()->prefix('so‘m')
+                ->disabled(fn () => ! $isModerator)
+                ->dehydrated(fn () => $isModerator),
+
+            TextInput::make('tulangan_foizi')->numeric()
+                ->disabled(fn () => ! $isModerator)
+                ->dehydrated(fn () => $isModerator),
+
+            DateTimePicker::make('end_date')
+                ->disabled(fn () => ! $isModerator)
+                ->dehydrated(fn () => $isModerator),
+
+            RichEditor::make('huquqbuzarlik_mazmuni')
+                ->disabled(fn () => ! $isModerator)
+                ->dehydrated(fn () => $isModerator),
+
+            RichEditor::make('qonun_moddasi')
+                ->disabled(fn () => ! $isModerator)
+                ->dehydrated(fn () => $isModerator),
+        ];
+
+        return $form->schema([
+            Section::make('Talabnoma ma’lumotlari (foydalanuvchi)')
+                ->schema($userFields)
+                ->columns(2),
+
+            Section::make('Moderator bo‘limi')
+                ->schema($moderatorFields)
+                ->columns(2)
+                ->hidden(fn () => ! $isModerator),
+        ])->columns(2);
+    }
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('inn')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('faoliyat_turi')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('hudud_is')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('tuman')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('start_tekshiruv')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('end_tekshiruv')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('yubroilgan_vaqti')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('talabnoma_raq')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('jarima_sum')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('jarima_foizi')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('tekshiruv_holati')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tulangan_sum')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tulangan_foizi')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('end_date')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('talabnoma_raq')->searchable(),
+                Tables\Columns\TextColumn::make('korxona_nomi')->limit(30)->searchable(),
+                Tables\Columns\TextColumn::make('inn')->searchable(),
+                Tables\Columns\TextColumn::make('tekshiruv_holati')->badge(),
+                Tables\Columns\TextColumn::make('user.name')->label('Yaratgan'),
+                Tables\Columns\TextColumn::make('created_at')->dateTime(),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn($record) => auth()->user()?->hasRole('moderator')
+                        || $record->user_id === auth()->id()),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array

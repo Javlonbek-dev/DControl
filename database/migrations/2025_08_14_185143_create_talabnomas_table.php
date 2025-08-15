@@ -16,7 +16,7 @@ return new class extends Migration
             $table->text('korxona_nomi');
             $table->string('inn');
             $table->string('faoliyat_turi');
-            $table->foreignId('hudud_is')->nullable()->constrained('hududs');
+            $table->foreignId('hudud_id')->nullable()->constrained('hududs');
             $table->string('tuman')->nullable();
             $table->timestamp('start_tekshiruv')->nullable();
             $table->timestamp('end_tekshiruv')->nullable();
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->integer('tulangan_foizi')->nullable();
             $table->timestamp('end_date')->nullable();
             $table->text('huquqbuzarlik_mazmuni')->nullable();
-            $table->text('qounun_moddasi')->nullable();
+            $table->text('qonun_moddasi')->nullable();
             $table->foreignId('user_id')->constrained('users');
             $table->timestamps();
         });
