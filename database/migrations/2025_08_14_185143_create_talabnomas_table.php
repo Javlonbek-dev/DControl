@@ -30,6 +30,7 @@ return new class extends Migration
             $table->timestamp('end_date')->nullable();
             $table->text('huquqbuzarlik_mazmuni')->nullable();
             $table->text('qounun_moddasi')->nullable();
+            $table->foreignId('user_id')->constrained('users');
             $table->timestamps();
         });
     }
