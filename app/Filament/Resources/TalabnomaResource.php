@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TalabnomaResource\Pages;
 use App\Filament\Resources\TalabnomaResource\RelationManagers;
 use App\Models\Talabnoma;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -32,8 +33,8 @@ class TalabnomaResource extends Resource
                 Forms\Components\TextInput::make('faoliyat_turi')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('hudud_is')
-                    ->relationship('hududs', 'hudud_nomi'),
+                Forms\Components\TextInput::make('hudud_is')
+                    ->numeric(),
                 Forms\Components\TextInput::make('tuman')
                     ->maxLength(255),
                 Forms\Components\DateTimePicker::make('start_tekshiruv'),
@@ -57,7 +58,10 @@ class TalabnomaResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Textarea::make('qounun_moddasi')
                     ->columnSpanFull(),
-            ])->columns(1);
+                Forms\Components\Select::make('user_id')
+                    ->disabled()
+                    ->default(Filament::auth()->user()->name),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -98,6 +102,9 @@ class TalabnomaResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('end_date')
                     ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('user_id')
+                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
