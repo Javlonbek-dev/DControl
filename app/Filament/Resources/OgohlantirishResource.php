@@ -99,7 +99,7 @@ class OgohlantirishResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->sortable()
                     ->label('Ijrochi Ismi'),
-                Tables\Columns\TextColumn::make('hudud.hudud_nomi')
+                Tables\Columns\TextColumn::make('region.region_id')
                     ->label('Hudud nomi')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')

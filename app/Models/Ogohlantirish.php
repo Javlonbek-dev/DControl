@@ -9,6 +9,7 @@ class Ogohlantirish extends Model
 {
     use HasFactory;
 
+    protected $table = 'ogohlantirish';
     protected $guarded = [];
 
     public function region()

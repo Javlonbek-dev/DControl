@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Hudud;
+use App\Models\Region;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class HududSeeder extends Seeder
+class RegionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -32,7 +32,7 @@ class HududSeeder extends Seeder
         ];
 
         foreach ($viloyatlar as $nomi) {
-            Hudud::create(['name' => $nomi]);
+            Region::create(['name' => $nomi]);
         }
     }
 }

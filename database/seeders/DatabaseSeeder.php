@@ -262,7 +262,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call(
             [
-                HududSeeder::class
+                RegionSeeder::class
             ]
         );
     }
