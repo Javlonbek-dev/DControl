@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hududs', function (Blueprint $table) {
+        Schema::create('gov_controls', function (Blueprint $table) {
             $table->id();
-            $table->string('hudud_nomi');
+            $table->foreignId('order_id')->constrained('orders');
+            $table->date('real_date_from');
+            $table->date('real_date_to');
+            $table->foreignId('created_by')->nullable()->constrained('users');
+            $table->foreignId('updated_by')->nullable()->constrained('users');
             $table->timestamps();
         });
     }
@@ -23,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hududs');
+        Schema::dropIfExists('gov_controls');
     }
 };

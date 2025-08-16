@@ -57,7 +57,7 @@ class OgohlantirishImport implements ToModel, WithStartRow
 
         $hududId = null;
         if ($lotinHudud) {
-            $hudud = \App\Models\Hudud::where('hudud_nomi', $lotinHudud)->first();
+            $hudud = \App\Models\Region::where('name', $lotinHudud)->first();
             $hududId = $hudud?->id;
         }
 
@@ -127,7 +127,7 @@ class OgohlantirishImport implements ToModel, WithStartRow
 
         return new Ogohlantirish([
             'id'=>$row[0],
-            'hudud_id'=>$hududId,
+            'region_id'=>$hududId,
             'stir'=>$row[2],
             'korxona_nomi'=>$row[3],
             'mahsulot_nomi'=>$row[4],

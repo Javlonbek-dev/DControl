@@ -10,9 +10,9 @@ class Profilaktika extends Model
 
     protected $table = 'profilaktikas';
 
-    public function hudud()
+    public function region()
     {
-        return $this->belongsTo(Hudud::class, 'hudud_id');
+        return $this->belongsTo(Region::class, 'hudud_id');
     }
 
     public function users()

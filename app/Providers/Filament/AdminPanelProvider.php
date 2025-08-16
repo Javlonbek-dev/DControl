@@ -31,7 +31,6 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->resources(
                 [
-                    HududResource::class,
                     OgohlantirishResource::class,
                 ]
             )

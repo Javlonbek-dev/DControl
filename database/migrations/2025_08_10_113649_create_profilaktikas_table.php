@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('profilaktikas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('hudud_id')->constrained('hududs');
+            $table->foreignId('region_id')->constrained('regions');
             $table->string('korxona_nomi');
             $table->string('stir')->nullable();
-            $table->index(['hudud_id', 'stir', 'korxona_nomi']);
+            $table->index(['region_id', 'stir', 'korxona_nomi']);
             $table->text('mahsulot_nomi')->nullable();
             $table->text('soha_nomi')->nullable();
             $table->date('prof_sanasi')->nullable();

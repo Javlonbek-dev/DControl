@@ -33,8 +33,8 @@ class ProfilaktikaResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('hudud_id')
-                    ->relationship('hudud', 'hudud_nomi'),
+                Forms\Components\Select::make('region_id')
+                    ->relationship('region', 'name'),
                 Forms\Components\Textarea::make('korxona_nomi')
                     ->required()
                     ->columnSpanFull(),
@@ -58,7 +58,7 @@ class ProfilaktikaResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('hudud.hudud_nomi')
+                Tables\Columns\TextColumn::make('regions.region')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stir')
                     ->sortable(),

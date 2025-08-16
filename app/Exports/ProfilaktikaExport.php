@@ -12,11 +12,11 @@ class ProfilaktikaExport implements FromCollection
     public function collection()
     {
         return Db::table('profilaktikas')
-            ->leftJoin('hududs', 'profilaktikas.hudud_id', '=', 'hududs.id')
+            ->leftJoin('regions', 'profilaktikas.region_id', '=', 'regions.id')
             ->leftJoin('users', 'profilaktikas.user_id', '=', 'users.id')
             ->select(
                 'profilaktikas.id',
-                'hududs.hudud_nomi',
+                'regions.name',
                 'profilaktikas.stir',
                 'profilaktikas.korxona_nomi',
                 'profilaktikas.soha_nomi',

@@ -9,12 +9,11 @@ class Ogohlantirish extends Model
 {
     use HasFactory;
 
-    protected $table = 'ogohlantirish';
     protected $guarded = [];
 
-    public function hudud()
+    public function region()
     {
-        return $this->belongsTo(Hudud::class, 'hudud_id');
+        return $this->belongsTo(Region::class, 'hudud_id');
     }
 
     public function user()

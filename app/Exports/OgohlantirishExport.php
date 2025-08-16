@@ -15,11 +15,11 @@ class OgohlantirishExport implements FromCollection,  WithHeadings
     public function collection()
     {
         return DB::table('ogohlantirish')
-            ->leftJoin('hududs', 'ogohlantirish.hudud_id', '=', 'hududs.id')
+            ->leftJoin('regions', 'ogohlantirish.region_id', '=', 'regions.id')
             ->leftJoin('users', 'ogohlantirish.user_id', '=', 'users.id')
             ->select(
                 'ogohlantirish.id',
-                'hududs.hudud_nomi',
+                'regions.name',
                 'ogohlantirish.stir',
                 'ogohlantirish.korxona_nomi',
                 'ogohlantirish.mahsulot_nomi',

@@ -32,7 +32,7 @@ class HududSeeder extends Seeder
         ];
 
         foreach ($viloyatlar as $nomi) {
-            Hudud::create(['hudud_nomi' => $nomi]);
+            Hudud::create(['name' => $nomi]);
         }
     }
 }

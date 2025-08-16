@@ -61,8 +61,8 @@ class OgohlantirishResource extends Resource
                     ->default(Filament::auth()->user()->name)
                     ->disabled()
                     ->required(),
-                Forms\Components\Select::make('hudud_id')
-                    ->relationship('hudud', 'hudud_nomi'),
+                Forms\Components\Select::make('region_id')
+                    ->relationship('region', 'name'),
             ])->columns(1);
     }
 

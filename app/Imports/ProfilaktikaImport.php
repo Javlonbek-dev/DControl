@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Hudud;
 use App\Models\Ogohlantirish;
 use App\Models\Profilaktika;
+use App\Models\Region;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -59,13 +60,13 @@ class ProfilaktikaImport implements ToModel, WithStartRow
         $hududId = null;
         if ($lotinHudud)
         {
-            $hudud = Hudud::where('hudud_nomi', $lotinHudud)->first();
+            $hudud = Region::where('name', $lotinHudud)->first();
             $hududId = $hudud->id;
         }
 
         return new Profilaktika([
             'id'=>$row[0],
-            'hudud_id' => $hududId,
+            'region_id' => $hududId,
             'korxona_nomi' => $row[2],
             'stir'=> $row[3],
             'mahsulot_nomi'=>$row[4],

@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('javob_sanasi')->nullable();
             $table->string('javob_raqami')->nullable();
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('hudud_id')->nullable()->constrained('hududs');
+            $table->foreignId('region_id')->nullable()->constrained('regions');
             $table->timestamps();
         });
     }
