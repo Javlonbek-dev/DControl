@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('stir');
-            $table->foreignId('district_id')->constrained('districts');
+            $table->foreignId('district_id')->nullable()->constrained('districts');
             $table->string('is_business');
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();

@@ -34,29 +34,25 @@ class EconomicSanctionResource extends Resource
                 Forms\Components\TextInput::make('assessed_fine')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('court_id')
+                Forms\Components\Select::make('court_id')
                     ->required()
-                    ->numeric(),
+                    ->relationship('courts', 'name'),
                 Forms\Components\DatePicker::make('decision_date')
                     ->required(),
                 Forms\Components\TextInput::make('decision_number')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('decision_type_id')
+                Forms\Components\Select::make('decision_type_id')
                     ->required()
-                    ->numeric(),
+                    ->relationship('decision_types', 'name'),
                 Forms\Components\TextInput::make('imposed_fine')
                     ->required()
                     ->numeric(),
                 Forms\Components\Toggle::make('is_paid')
                     ->required(),
-                Forms\Components\TextInput::make('sanction_id')
+                Forms\Components\Select::make('sanction_id')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('created_by')
-                    ->numeric(),
-                Forms\Components\TextInput::make('updated_by')
-                    ->numeric(),
+                    ->relationship('sanctions', 'name'),
             ]);
     }
 
@@ -93,12 +89,12 @@ class EconomicSanctionResource extends Resource
                 Tables\Columns\TextColumn::make('sanction_id')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_by')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('createdBy.name')
+                    ->label('Kim tomonidan yaratilgan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('updatedBy.name')
+                    ->label('Kim tomonidan o\'zgartirilgan')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -28,9 +28,9 @@ class AdministrativeLiabilityResource extends Resource
                     ->numeric(),
                 Forms\Components\DatePicker::make('registration_date')
                     ->required(),
-                Forms\Components\TextInput::make('decision_type_id')
+                Forms\Components\Select::make('decision_type_id')
                     ->required()
-                    ->numeric(),
+                    ->relationship('decision_type', 'name'),
                 Forms\Components\DatePicker::make('decision_date')
                     ->required(),
                 Forms\Components\TextInput::make('imposed_fine')
@@ -38,22 +38,18 @@ class AdministrativeLiabilityResource extends Resource
                     ->numeric(),
                 Forms\Components\Toggle::make('is_paid')
                     ->required(),
-                Forms\Components\TextInput::make('bxm_id')
+                Forms\Components\Select::make('bxm_id')
                     ->required()
-                    ->numeric(),
+                    ->relationship('bxm', 'quantity'),
                 Forms\Components\TextInput::make('person_full_name')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('person_passport')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('profession_id')
+                Forms\Components\Select::make('profession_id')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('created_by')
-                    ->numeric(),
-                Forms\Components\TextInput::make('updated_by')
-                    ->numeric(),
+                    ->relationship('profession', 'name'),
             ]);
     }
 
@@ -67,9 +63,8 @@ class AdministrativeLiabilityResource extends Resource
                 Tables\Columns\TextColumn::make('registration_date')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('decision_type_id')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('decision_type.name')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('decision_date')
                     ->date()
                     ->sortable(),
@@ -78,22 +73,22 @@ class AdministrativeLiabilityResource extends Resource
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_paid')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('bxm_id')
+                Tables\Columns\TextColumn::make('bxm.quality')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('person_full_name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('person_passport')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('profession_id')
+                Tables\Columns\TextColumn::make('profession.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_by')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('createdBy.name')
+                    ->label('Kim tomonidan yaratilgan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('updatedBy.name')
+                    ->label('Kim tomonidan o\'zgartirilgan')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('administrative_codes', function (Blueprint $table) {
             $table->id();
             $table->string('article');
-            $table->foreignId('normative_act_id')->constrained('normative_acts');
-            $table->foreignId('created_by')->nullable()->constrained('users');
-            $table->foreignId('updated_by')->nullable()->constrained('users');
+            $table->foreignId('normative_act_id')->nullable()->constrained('normative_acts');
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

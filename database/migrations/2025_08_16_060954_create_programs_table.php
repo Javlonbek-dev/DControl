@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('programs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_type_id')->constrained('company_types');
-            $table->foreignId('district_id')->constrained('districts');
-            $table->foreignId('company_id')->constrained('companies');
+            $table->string('number');
+            $table->date('program_date');
+            $table->foreignId('company_type_id')->nullable()->constrained('company_types');
+            $table->foreignId('district_id')->nullable()->constrained('districts');
+            $table->foreignId('company_id')->nullable()->constrained('companies');
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

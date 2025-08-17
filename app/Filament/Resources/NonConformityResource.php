@@ -23,34 +23,30 @@ class NonConformityResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('product_id')
+                Forms\Components\Select::make('product_id')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('metrology_instrument_id')
+                    ->relationship('product', 'name'),
+                Forms\Components\Select::make('metrology_instrument_id')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('certificate_id')
+                    ->relationship('metrology_instrument', 'name'),
+                Forms\Components\Select::make('certificate_id')
                     ->required()
-                    ->numeric(),
+                    ->relationship('certificate', 'name'),
                 Forms\Components\TextInput::make('normative_act_id')
-                    ->required()
-                    ->numeric(),
+                    ->required(),
+//                    ->relationship('normative_act', 'name'),
                 Forms\Components\TextInput::make('written_directive_id')
-                    ->required()
-                    ->numeric(),
+                    ->required(),
+//                    ->relationship('written_directive', 'name'),
                 Forms\Components\TextInput::make('administrative_liability_id')
-                    ->required()
-                    ->numeric(),
+                    ->required(),
+//                    ->relationship('administrative_liabilitie', 'number'),
                 Forms\Components\TextInput::make('economic_sanction_id')
-                    ->required()
-                    ->numeric(),
+                    ->required(),
+//                    ->relationship('economic_sanction', 'number'),
                 Forms\Components\TextInput::make('sanction_payment_request_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('created_by')
-                    ->numeric(),
-                Forms\Components\TextInput::make('updated_by')
-                    ->numeric(),
+                    ->required(),
+//                    ->relationship('sanction_payment_request', 'number'),
                 Forms\Components\Textarea::make('normative_documents')
                     ->required()
                     ->columnSpanFull(),
@@ -85,12 +81,12 @@ class NonConformityResource extends Resource
                 Tables\Columns\TextColumn::make('sanction_payment_request_id')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_by')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('createdBy.name')
+                    ->label('Kim tomonidan yaratilgan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('updatedBy.name')
+                    ->label('Kim tomonidan o\'zgartirilgan')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

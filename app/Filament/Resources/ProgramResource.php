@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\RegionResource\Pages;
-use App\Filament\Resources\RegionResource\RelationManagers;
-use App\Models\Region;
+use App\Filament\Resources\ProgramResource\Pages;
+use App\Filament\Resources\ProgramResource\RelationManagers;
+use App\Models\Program;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,12 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class RegionResource extends Resource
+class ProgramResource extends Resource
 {
-    protected static ?string $model = Region::class;
-    protected static ?string $pluralLabel = "Hududlar";
-    protected static ?string $navigationGroup = 'Tashkilot Malumotlari';
-
+    protected static ?string $model = Program::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -26,9 +23,14 @@ class RegionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\Select::make('company_type_id')
                     ->required()
-                    ->maxLength(255),
+                    ->relationship('company_type', 'name'),
+                Forms\Components\Select::make('district_id')
+                    ->relationship('district', 'name'),
+                Forms\Components\Select::make('company_id')
+                    ->required()
+                    ->relationship('company', 'name'),
             ]);
     }
 
@@ -36,8 +38,15 @@ class RegionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('company_type.name')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('district.name')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('company.name')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('createdBy.name')
                     ->label('Kim tomonidan yaratilgan')
                     ->searchable(),
@@ -76,9 +85,9 @@ class RegionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRegions::route('/'),
-            'create' => Pages\CreateRegion::route('/create'),
-            'edit' => Pages\EditRegion::route('/{record}/edit'),
+            'index' => Pages\ListPrograms::route('/'),
+            'create' => Pages\CreateProgram::route('/create'),
+            'edit' => Pages\EditProgram::route('/{record}/edit'),
         ];
     }
 }

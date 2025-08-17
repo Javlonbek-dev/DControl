@@ -30,10 +30,6 @@ class ProfessionResource extends Resource
                     ->required(),
                 Forms\Components\Toggle::make('is_official')
                     ->required(),
-                Forms\Components\TextInput::make('created_by')
-                    ->numeric(),
-                Forms\Components\TextInput::make('updated_by')
-                    ->numeric(),
             ]);
     }
 
@@ -47,12 +43,12 @@ class ProfessionResource extends Resource
                     ->boolean(),
                 Tables\Columns\IconColumn::make('is_official')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_by')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('createdBy.name')
+                    ->label('Kim tomonidan yaratilgan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('updatedBy.name')
+                    ->label('Kim tomonidan o\'zgartirilgan')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

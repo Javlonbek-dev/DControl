@@ -27,13 +27,9 @@ class CourtResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('district_id')
+                Forms\Components\Select::make('district_id')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('created_by')
-                    ->numeric(),
-                Forms\Components\TextInput::make('updated_by')
-                    ->numeric(),
+                    ->relationship('districts', 'name'),
             ]);
     }
 
@@ -41,15 +37,15 @@ class CourtResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('district_id')
+                Tables\Columns\TextColumn::make('districts.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_by')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('createdBy.name')
+                    ->label('Kim tomonidan yaratilgan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('updatedBy.name')
+                    ->label('Kim tomonidan o\'zgartirilgan')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

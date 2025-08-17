@@ -30,11 +30,7 @@ class AdministrativeCodeResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('normative_act_id')
                     ->relationship('normative_act', 'name')
-                    ->required(),
-                Forms\Components\TextInput::make('created_by')
-                    ->numeric(),
-                Forms\Components\TextInput::make('updated_by')
-                    ->numeric(),
+                    ->required()
             ]);
     }
 
@@ -47,12 +43,12 @@ class AdministrativeCodeResource extends Resource
                 Tables\Columns\TextColumn::make('normative_act.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_by')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('createdBy.name')
+                    ->label('Kim tomonidan yaratilgan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('updatedBy.name')
+                    ->label('Kim tomonidan o\'zgartirilgan')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

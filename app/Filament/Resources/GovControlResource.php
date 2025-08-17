@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class GovControlResource extends Resource
 {
     protected static ?string $model = GovControl::class;
+    protected static ?string $pluralLabel= "Tekshiruv";
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -28,12 +29,13 @@ class GovControlResource extends Resource
                     ->numeric(),
                 Forms\Components\DatePicker::make('real_date_from')
                     ->required(),
-                Forms\Components\DatePicker::make('real_date_to')
+                Forms\Components\TextInput::make('number')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\DatePicker::make('gov_control_date')
                     ->required(),
-                Forms\Components\TextInput::make('created_by')
-                    ->numeric(),
-                Forms\Components\TextInput::make('updated_by')
-                    ->numeric(),
+                Forms\Components\DatePicker::make('real_date_to'),
+                Forms\Components\Toggle::make('is_finished')->default(false),
             ]);
     }
 
@@ -47,15 +49,21 @@ class GovControlResource extends Resource
                 Tables\Columns\TextColumn::make('real_date_from')
                     ->date()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('number')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('gov_control_date')
+                    ->date()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('real_date_to')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_by')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('createdBy')
+                    ->label('Kim tomonidan yaratilgan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('updatedBy')
+                    ->label('Kim tomonidan o\'zgartirilgan')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

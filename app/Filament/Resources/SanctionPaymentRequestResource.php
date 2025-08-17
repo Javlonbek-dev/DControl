@@ -32,10 +32,6 @@ class SanctionPaymentRequestResource extends Resource
                     ->numeric(),
                 Forms\Components\Toggle::make('is_paid')
                     ->required(),
-                Forms\Components\TextInput::make('created_by')
-                    ->numeric(),
-                Forms\Components\TextInput::make('updated_by')
-                    ->numeric(),
             ]);
     }
 
@@ -54,12 +50,12 @@ class SanctionPaymentRequestResource extends Resource
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_paid')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_by')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('createdBy.name')
+                    ->label('Kim tomonidan yaratilgan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('updatedBy.name')
+                    ->label('Kim tomonidan o\'zgartirilgan')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

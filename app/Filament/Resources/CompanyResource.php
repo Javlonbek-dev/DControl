@@ -33,14 +33,10 @@ class CompanyResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('district_id')
                     ->required()
-                    ->relationship('districts', 'name'),
-                Forms\Components\TextInput::make('is_business')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('created_by')
-                    ->numeric(),
-                Forms\Components\TextInput::make('updated_by')
-                    ->numeric(),
+                    ->relationship('district', 'name'),
+                Forms\Components\Toggle::make('is_business')
+                    ->required(),
+
             ]);
     }
 
@@ -52,17 +48,17 @@ class CompanyResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('stir')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('district_id')
+                Tables\Columns\TextColumn::make('district.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('is_business')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_by')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('createdBy.name')
+                    ->label('Kim tomonidan yaratilgan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('updatedBy.name')
+                    ->label('Kim tomonidan o\'zgartirilgan')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

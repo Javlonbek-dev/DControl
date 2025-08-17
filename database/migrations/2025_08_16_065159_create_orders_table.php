@@ -13,17 +13,17 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->integer('number');
+            $table->string('number');
             $table->integer('ombudsman_code_number');
             $table->integer('control_days');
             $table->date('data_from');
             $table->date('data_to');
             $table->date('period_from');
             $table->date('period_to');
-            $table->foreignId('program_id')->constrained('programs');
+            $table->foreignId('program_id')->nullable()->constrained('programs');
             $table->timestamps();
-            $table->foreignId('created_by')->nullable()->constrained('users');
-            $table->foreignId('updated_by')->nullable()->constrained('users');
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
         });
     }
 

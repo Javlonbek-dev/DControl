@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('non_conformities', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products');
-            $table->foreignId('metrology_instrument_id')->constrained('metrology_instruments');
-            $table->foreignId('certificate_id')->constrained('certificates');
-            $table->foreignId('normative_act_id')->constrained('normative_acts');
-            $table->foreignId('written_directive_id')->constrained('written_directives');
-            $table->foreignId('administrative_liability_id')->constrained('administrative_liabilities');
-            $table->foreignId('economic_sanction_id')->constrained('economic_sanctions');
-            $table->foreignId('sanction_payment_request_id')->constrained('sanction_payment_requests');
-            $table->foreignId('created_by')->nullable()->constrained('users');
-            $table->foreignId('updated_by')->nullable()->constrained('users');
+            $table->foreignId('product_id')->nullable()->constrained('products');
+            $table->foreignId('metrology_instrument_id')->nullable()->constrained('metrology_instruments');
+            $table->foreignId('certificate_id')->nullable()->constrained('certificates');
+            $table->foreignId('normative_act_id')->nullable()->constrained('normative_acts');
+            $table->foreignId('written_directive_id')->nullable()->constrained('written_directives');
+            $table->foreignId('administrative_liability_id')->nullable()->constrained('administrative_liabilities');
+            $table->foreignId('economic_sanction_id')->nullable()->constrained('economic_sanctions');
+            $table->foreignId('sanction_payment_request_id')->nullable()->constrained('sanction_payment_requests');
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->text('normative_documents');
             $table->timestamps();
         });

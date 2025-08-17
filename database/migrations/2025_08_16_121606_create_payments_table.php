@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sanction_id')->constrained('sanction_payment_requests');
-            $table->foreignId('economic_sanction_id')->constrained('economic_sanctions');
+            $table->foreignId('sanction_id')->nullable()->constrained('sanction_payment_requests');
+            $table->foreignId('economic_sanction_id')->nullable()->constrained('economic_sanctions');
             $table->foreignId('administrative_liability_id')->nullable()->constrained('administrative_liabilities');
             $table->date('paid_date');
             $table->double('paid_ball');

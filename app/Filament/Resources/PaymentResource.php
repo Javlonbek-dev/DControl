@@ -26,22 +26,18 @@ class PaymentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('sanction_id')
+                Forms\Components\Select::make('sanction_id')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('economic_sanction_id')
+                    ->relationship('sanction', 'number'),
+                Forms\Components\Select::make('economic_sanction_id')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('administrative_liability_id')
-                    ->numeric(),
+                    ->relationship('economic_sanction', 'number'),
+                Forms\Components\Select::make('administrative_liability_id')
+                    ->relationship('administrative_liability', 'number'),
                 Forms\Components\DatePicker::make('paid_date')
                     ->required(),
                 Forms\Components\TextInput::make('paid_ball')
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('created_by')
-                    ->numeric(),
-                Forms\Components\TextInput::make('updated_by')
                     ->numeric(),
             ]);
     }
@@ -65,12 +61,12 @@ class PaymentResource extends Resource
                 Tables\Columns\TextColumn::make('paid_ball')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_by')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('createdBy.name')
+                    ->label('Kim tomonidan yaratilgan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('updatedBy.name')
+                    ->label('Kim tomonidan o\'zgartirilgan')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

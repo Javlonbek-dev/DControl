@@ -17,8 +17,8 @@ return new class extends Migration
             $table->date('registration_date');
             $table->float('assessed_fine');
             $table->boolean('is_paid');
-            $table->foreignId('created_by')->nullable()->constrained('users');
-            $table->foreignId('updated_by')->nullable()->constrained('users');
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

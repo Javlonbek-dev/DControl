@@ -16,15 +16,15 @@ return new class extends Migration
             $table->integer('number');
             $table->date('registration_date');
             $table->double('assessed_fine');
-            $table->foreignId('court_id')->constrained('courts');
+            $table->foreignId('court_id')->nullable()->constrained('courts');
             $table->date('decision_date');
             $table->integer('decision_number');
-            $table->foreignId('decision_type_id')->constrained('decision_types');
+            $table->foreignId('decision_type_id')->nullable()->constrained('decision_types');
             $table->double('imposed_fine');
             $table->boolean('is_paid');
-            $table->foreignId('sanction_id')->constrained('sanction_payment_requests');
-            $table->foreignId('created_by')->nullable()->constrained('users');
-            $table->foreignId('updated_by')->nullable()->constrained('users');
+            $table->foreignId('sanction_id')->nullable()->constrained('sanction_payment_requests');
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

@@ -15,16 +15,16 @@ return new class extends Migration
             $table->id();
             $table->integer('number');
             $table->date('registration_date');
-            $table->foreignId('decision_type_id')->constrained('decision_types');
+            $table->foreignId('decision_type_id')->nullable()->constrained('decision_types');
             $table->date('decision_date');
             $table->float('imposed_fine');
             $table->boolean('is_paid');
-            $table->foreignId('bxm_id')->constrained('bxms');
+            $table->foreignId('bxm_id')->nullable()->constrained('bxms');
             $table->string('person_full_name');
             $table->string('person_passport');
-            $table->foreignId('profession_id')->constrained('professions');
-            $table->foreignId('created_by')->nullable()->constrained('users');
-            $table->foreignId('updated_by')->nullable()->constrained('users');
+            $table->foreignId('profession_id')->nullable()->constrained('professions');
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }
