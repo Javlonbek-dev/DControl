@@ -27,9 +27,11 @@ class BxmResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('quantity')
                     ->required()
+                    ->label('BXM qiymati')
                     ->numeric(),
                 Forms\Components\Toggle::make('is_active')
-                    ->required(),
+                    ->required()
+                    ->label('BXM so\'mmasi hozir amaldami'),
             ]);
     }
 
@@ -39,9 +41,11 @@ class BxmResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('quantity')
                     ->numeric()
+                    ->label('BXM qiymati')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
-                    ->boolean(),
+                    ->boolean()
+                    ->label('BXM so\'mmasi hozir amaldami'),
                 Tables\Columns\TextColumn::make('createdBy.name')
                     ->label('Kim tomonidan yaratilgan')
                     ->searchable(),

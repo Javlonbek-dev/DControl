@@ -16,7 +16,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class DecisionTypeResource extends Resource
 {
     protected static ?string $model = DecisionType::class;
-
+    protected static ?string $pluralLabel ="Qaror turi";
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form

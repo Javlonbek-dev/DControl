@@ -10,8 +10,19 @@ class Order extends Model
     use Blameable;
     protected $guarded = [];
 
-    public function program()
+    public function company()
     {
-        return $this->belongsTo(Program::class, 'program_id');
+        return $this->belongsTo(Company::class, 'company_id');
     }
+
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'district_id');
+    }
+
+    public function company_type()
+    {
+        return $this->belongsTo(CompanyType::class, 'company_type_id');
+    }
+
 }

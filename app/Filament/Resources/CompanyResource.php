@@ -27,15 +27,19 @@ class CompanyResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
+                    ->label('Tashkilot nomi')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('stir')
                     ->required()
+                    ->label('Tashkilot stiri')
                     ->maxLength(255),
                 Forms\Components\Select::make('district_id')
                     ->required()
+                    ->label('Tuman nomi')
                     ->relationship('district', 'name'),
                 Forms\Components\Toggle::make('is_business')
-                    ->required(),
+                    ->required()
+                    ->label('Tadbirkorlik subyectimi(Beznis ombudsman vakolatidagi tadbirkorlik subyecti)'),
 
             ]);
     }
@@ -45,14 +49,18 @@ class CompanyResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Tashkilot nomi'),
                 Tables\Columns\TextColumn::make('stir')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Tashkilot stiri'),
                 Tables\Columns\TextColumn::make('district.name')
                     ->numeric()
+                    ->label('Tuman nomi')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('is_business')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Tadbirkorlik subyektimi'),
                 Tables\Columns\TextColumn::make('createdBy.name')
                     ->label('Kim tomonidan yaratilgan')
                     ->searchable(),

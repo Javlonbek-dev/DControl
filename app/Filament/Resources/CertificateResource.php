@@ -16,7 +16,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CertificateResource extends Resource
 {
     protected static ?string $model = Certificate::class;
-
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = "Kamchiliklar turlari";
     protected static ?string $pluralLabel= "Sertifikat";
@@ -31,6 +34,7 @@ class CertificateResource extends Resource
                     ->relationship('gov_control.order', 'number'),
                 Forms\Components\TextInput::make('name')
                     ->required()
+                    ->label('Sertifikat')
                     ->maxLength(255),
             ]);
     }
@@ -39,11 +43,13 @@ class CertificateResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('gov_control_id')
+                Tables\Columns\TextColumn::make('gov_control.number')
                     ->numeric()
+                    ->label('Tekshiruv raqami')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Sertifikat'),
                 Tables\Columns\TextColumn::make('createdBy.name')
                     ->label('Kim tomonidan yaratilgan')
                     ->searchable(),

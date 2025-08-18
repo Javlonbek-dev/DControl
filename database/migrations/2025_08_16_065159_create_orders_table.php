@@ -20,7 +20,10 @@ return new class extends Migration
             $table->date('data_to');
             $table->date('period_from');
             $table->date('period_to');
-            $table->foreignId('program_id')->nullable()->constrained('programs');
+            $table->foreignId('company_type_id')->nullable()->constrained('company_types');
+            $table->foreignId('district_id')->nullable()->constrained('districts');
+            $table->boolean('is_district')->nullable()->default(false);
+            $table->foreignId('company_id')->nullable()->constrained('companies');
             $table->timestamps();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();

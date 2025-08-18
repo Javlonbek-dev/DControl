@@ -17,6 +17,10 @@ class AdministrativeCodeResource extends Resource
 {
     protected static ?string $model = AdministrativeCode::class;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
     protected static ?string $pluralLabel = "Ma'muriy javobgarlik to'g'risidagi kodeks";
     protected static ?string $navigationGroup = "Qonuniy Asoslar";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -27,9 +31,11 @@ class AdministrativeCodeResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('article')
                     ->required()
+                    ->label('Ma\'muriy javobgarlik to\'g\'risidagi kodeks matni')
                     ->maxLength(255),
                 Forms\Components\Select::make('normative_act_id')
                     ->relationship('normative_act', 'name')
+                    ->label('Normativ hujjat nomi')
                     ->required()
             ]);
     }
@@ -39,9 +45,10 @@ class AdministrativeCodeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('article')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Ma\'muriy javobgarlik to\'g\'risidagi kodeks matni'),
                 Tables\Columns\TextColumn::make('normative_act.name')
-                    ->numeric()
+                    ->label('Normativ hujjat nomi')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('createdBy.name')
                     ->label('Kim tomonidan yaratilgan')

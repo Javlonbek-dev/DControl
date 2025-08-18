@@ -19,7 +19,10 @@ class CourtResource extends Resource
 
     protected static ?string $pluralLabel= "Sudlar";
     protected static ?string $navigationGroup = 'Tashkilot Malumotlari';
-
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

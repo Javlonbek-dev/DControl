@@ -24,8 +24,13 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class OgohlantirishResource extends Resource
 {
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
     protected static ?string $model = Ogohlantirish::class;
 
+    protected static ?string $pluralLabel= "Ogohlantirishlar";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form

@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Blameable;
 use Illuminate\Database\Eloquent\Model;
 
 class GovControl extends Model
 {
+    use Blameable;
     protected $table = 'gov_controls';
     protected $primaryKey = 'id';
     protected $guarded = [];
@@ -13,5 +15,10 @@ class GovControl extends Model
     public function order()
     {
         return $this->belongsTo(Order::class, 'order_id');
+    }
+
+    public function administrative()
+    {
+        return $this->hasMany(AdministrativeLiability::class, 'gov_control_id');
     }
 }

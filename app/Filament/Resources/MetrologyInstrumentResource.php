@@ -17,6 +17,10 @@ class MetrologyInstrumentResource extends Resource
     protected static ?string $navigationGroup = "Kamchiliklar turlari";
     protected static ?string $pluralLabel = "Metralogiya";
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -25,10 +29,12 @@ class MetrologyInstrumentResource extends Resource
             ->schema([
                 Forms\Components\Select::make('gov_control_id')
                     ->required()
+                    ->label('Tekshiruv raqami')
                     ->searchable()
                     ->relationship('gov_control.order', 'number'),
                 Forms\Components\TextInput::make('name')
                     ->required()
+                    ->label('Metralogiya kamchiliklari haqida')
                     ->maxLength(255),
             ]);
     }
@@ -37,11 +43,12 @@ class MetrologyInstrumentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('gov_control_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('gov_control.number')
+                    ->label('Tekshiruv raqami')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Metralogiya kamchiliklari haqida'),
                 Tables\Columns\TextColumn::make('createdBy.name')
                     ->label('Kim tomonidan yaratilgan')
                     ->searchable(),

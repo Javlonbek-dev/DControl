@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class AdministrativeLiability extends Model
 {
     use Blameable;
+    protected $guarded;
 
     public function decision_type()
     {
@@ -22,5 +23,10 @@ class AdministrativeLiability extends Model
     public function profession()
     {
         return $this->belongsTo(Profession::class, 'profession_id');
+    }
+
+    public function gov_control()
+    {
+        return $this->belongsTo(GovControl::class, 'gov_control_id');
     }
 }

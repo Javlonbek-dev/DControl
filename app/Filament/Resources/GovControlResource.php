@@ -5,13 +5,15 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\GovControlResource\Pages;
 use App\Filament\Resources\GovControlResource\RelationManagers;
 use App\Models\GovControl;
+use Carbon\Carbon;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class GovControlResource extends Resource
 {
@@ -24,44 +26,91 @@ class GovControlResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('order_id')
+                Forms\Components\Select::make('order_id')
                     ->required()
-                    ->numeric(),
-                Forms\Components\DatePicker::make('real_date_from')
-                    ->required(),
+                    ->label('Buyruq raqami')
+                    ->relationship('order', 'number'),
                 Forms\Components\TextInput::make('number')
                     ->required()
+                    ->label('Tekshiruv raqami')
                     ->numeric(),
-                Forms\Components\DatePicker::make('gov_control_date')
-                    ->required(),
-                Forms\Components\DatePicker::make('real_date_to'),
-                Forms\Components\Toggle::make('is_finished')->default(false),
-            ]);
+                Forms\Components\DatePicker::make('real_date_from')
+                    ->required()
+                    ->label('Tilxat olingan sana')
+                    ->live(debounce: 0)
+                    ->afterStateUpdated(function (Set $set, $state) {
+                        if ($state) {
+                            $set('real_date_to', Carbon::parse($state)->addDays(10)->format('Y-m-d'));
+                        } else {
+                            $set('real_date_to', null);
+                        }
+                    }),
+
+                Forms\Components\DatePicker::make('real_date_to')
+                    ->readOnly()
+                    ->label('Tekshiruvni tugatish sanasi')
+                    ->afterStateHydrated(function (Get $get, Set $set, $state) {
+                        if (!$state && $get('real_date_from')) {
+                            $set('real_date_to', Carbon::parse($get('real_date_from'))->addDays(10)->format('Y-m-d'));
+                        }
+                    }),
+                Forms\Components\Toggle::make('is_finished')->default(false)
+                    ->visible(fn () => auth()->user()?->hasRole('moderator'))
+                    ->label('Tekshiruv tugatildimi'),
+                Forms\Components\Textarea::make('non_comformaty')
+                    ->label('Kamchilik hulosasi'),
+                Forms\Components\Toggle::make('is_zapret')->default(false)
+                    ->label('Zapret')
+                    ->reactive(),
+                Forms\Components\Toggle::make('is_bartaraf')->default(false)
+                    ->label('Bartarf')
+                    ->reactive(),
+                Forms\Components\DatePicker::make('zapret_date')
+                    ->visible(fn(callable $get) => $get('is_zapret') === true),
+                Forms\Components\TextInput::make('zapret_raqam')
+                    ->visible(fn(callable $get) => $get('is_zapret') === true),
+                Forms\Components\TextInput::make('bartaraf_raqam')
+                    ->visible(fn(callable $get) => $get('is_bartaraf') === true),
+                Forms\Components\DatePicker::make('bartaraf_date')
+                    ->visible(fn(callable $get) => $get('is_bartaraf') === true),
+            ])->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('order_id')
+                Tables\Columns\TextColumn::make('order.company.name')
+                    ->searchable()
+                    ->label('Tashkilot nomi'),
+                Tables\Columns\TextColumn::make('order.number')
                     ->numeric()
+                    ->label('Buyruq raqami')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('number')
+                    ->label('Tekshiruv raqami')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('real_date_from')
                     ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('number')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('gov_control_date')
-                    ->date()
+                    ->label('Tilxat olingan sana')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('real_date_to')
                     ->date()
+                    ->label('Tekshiruvni tugatish sanasi')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('createdBy')
+                Tables\Columns\TextColumn::make('is_finished')
+                    ->label('Tekshiruv tugatilganmi')
+                    ->badge()
+                    ->icon(fn($record) => $record->is_finished
+                        ? 'heroicon-o-check-circle'
+                        : 'heroicon-o-x-circle'
+                    )
+                    ->color(fn($record) => $record->is_finished ? 'success' : 'danger')
+                    ->formatStateUsing(fn($state) => $state ? 'Tugatilgan' : 'Tugatilmagan'),
+                Tables\Columns\TextColumn::make('createdBy.name')
                     ->label('Kim tomonidan yaratilgan')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('updatedBy')
+                Tables\Columns\TextColumn::make('updatedBy.name')
                     ->label('Kim tomonidan o\'zgartirilgan')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -77,6 +126,7 @@ class GovControlResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -99,6 +149,8 @@ class GovControlResource extends Resource
             'index' => Pages\ListGovControls::route('/'),
             'create' => Pages\CreateGovControl::route('/create'),
             'edit' => Pages\EditGovControl::route('/{record}/edit'),
+            'view' => Pages\ViewGovControlResource::route('/{record}'),
+
         ];
     }
 }

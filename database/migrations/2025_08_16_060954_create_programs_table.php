@@ -12,15 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('programs', function (Blueprint $table) {
-            $table->id();
-            $table->string('number');
-            $table->date('program_date');
-            $table->foreignId('company_type_id')->nullable()->constrained('company_types');
-            $table->foreignId('district_id')->nullable()->constrained('districts');
-            $table->foreignId('company_id')->nullable()->constrained('companies');
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->timestamps();
+//            $table->id();
+//            $table->string('number');
+//            $table->date('program_date');
+//            $table->foreignId('company_type_id')->nullable()->constrained('company_types');
+//            $table->foreignId('district_id')->nullable()->constrained('districts');
+//            $table->boolean('is_district')->nullable()->default(false);
+//            $table->foreignId('company_id')->nullable()->constrained('companies');
+//            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+//            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+//            $table->timestamps();
         });
     }
 

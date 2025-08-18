@@ -16,7 +16,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ProfessionResource extends Resource
 {
     protected static ?string $model = Profession::class;
-
+    protected static ?string $navigationLabel = "Lavozimlar";
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form

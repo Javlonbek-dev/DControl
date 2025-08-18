@@ -16,7 +16,10 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
     protected static ?string $navigationGroup = "Kamchiliklar turlari";
     protected static ?string $pluralLabel = "Mahsulot";
-
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -26,9 +29,11 @@ class ProductResource extends Resource
                 Forms\Components\Select::make('gov_control_id')
                     ->required()
                     ->searchable()
-                    ->relationship('gov_control.order', 'number'),
+                    ->relationship('gov_control', 'number')
+                    ->label('Tekshiruv raqami'),
                 Forms\Components\TextInput::make('name')
                     ->required()
+                    ->label('Mahsulot tavsifi haqida malumot')
                     ->maxLength(255),
             ]);
     }
@@ -37,11 +42,12 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('gov_control_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('gov_control.number')
+                    ->label('Tekshiruv raqami')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Mahsulot tavsifi haqida malumot'),
                 Tables\Columns\TextColumn::make('createdBy.name')
                     ->label('Kim tomonidan yaratilgan')
                     ->searchable(),
