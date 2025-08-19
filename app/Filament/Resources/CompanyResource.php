@@ -61,12 +61,6 @@ class CompanyResource extends Resource
                 Tables\Columns\TextColumn::make('is_business')
                     ->searchable()
                     ->label('Tadbirkorlik subyektimi'),
-                Tables\Columns\TextColumn::make('createdBy.name')
-                    ->label('Kim tomonidan yaratilgan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('updatedBy.name')
-                    ->label('Kim tomonidan o\'zgartirilgan')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

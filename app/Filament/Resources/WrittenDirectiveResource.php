@@ -15,10 +15,10 @@ class WrittenDirectiveResource extends Resource
 {
     protected static ?string $model = WrittenDirective::class;
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
+//    public static function shouldRegisterNavigation(): bool
+//    {
+//        return false;
+//    }
 
     protected static ?string $pluralLabel = "Yozma Ko'rsatma";
     protected static ?string $navigationGroup = "Qonuniy Asoslar";

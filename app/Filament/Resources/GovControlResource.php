@@ -57,22 +57,22 @@ class GovControlResource extends Resource
                 Forms\Components\Toggle::make('is_finished')->default(false)
                     ->visible(fn () => auth()->user()?->hasRole('moderator'))
                     ->label('Tekshiruv tugatildimi'),
-                Forms\Components\Textarea::make('non_comformaty')
-                    ->label('Kamchilik hulosasi'),
-                Forms\Components\Toggle::make('is_zapret')->default(false)
-                    ->label('Zapret')
-                    ->reactive(),
-                Forms\Components\Toggle::make('is_bartaraf')->default(false)
-                    ->label('Bartarf')
-                    ->reactive(),
-                Forms\Components\DatePicker::make('zapret_date')
-                    ->visible(fn(callable $get) => $get('is_zapret') === true),
-                Forms\Components\TextInput::make('zapret_raqam')
-                    ->visible(fn(callable $get) => $get('is_zapret') === true),
-                Forms\Components\TextInput::make('bartaraf_raqam')
-                    ->visible(fn(callable $get) => $get('is_bartaraf') === true),
-                Forms\Components\DatePicker::make('bartaraf_date')
-                    ->visible(fn(callable $get) => $get('is_bartaraf') === true),
+//                Forms\Components\Textarea::make('non_comformaty')
+//                    ->label('Kamchilik hulosasi'),
+//                Forms\Components\Toggle::make('is_zapret')->default(false)
+//                    ->label('Zapret')
+//                    ->reactive(),
+//                Forms\Components\Toggle::make('is_bartaraf')->default(false)
+//                    ->label('Bartarf')
+//                    ->reactive(),
+//                Forms\Components\DatePicker::make('zapret_date')
+//                    ->visible(fn(callable $get) => $get('is_zapret') === true),
+//                Forms\Components\TextInput::make('zapret_raqam')
+//                    ->visible(fn(callable $get) => $get('is_zapret') === true),
+//                Forms\Components\TextInput::make('bartaraf_raqam')
+//                    ->visible(fn(callable $get) => $get('is_bartaraf') === true),
+//                Forms\Components\DatePicker::make('bartaraf_date')
+//                    ->visible(fn(callable $get) => $get('is_bartaraf') === true),
             ])->columns(1);
     }
 
@@ -91,11 +91,11 @@ class GovControlResource extends Resource
                     ->label('Tekshiruv raqami')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('real_date_from')
-                    ->date()
+                    ->date('d-m-Y')
                     ->label('Tilxat olingan sana')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('real_date_to')
-                    ->date()
+                    ->date('d-m-Y')
                     ->label('Tekshiruvni tugatish sanasi')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('is_finished')
@@ -107,12 +107,6 @@ class GovControlResource extends Resource
                     )
                     ->color(fn($record) => $record->is_finished ? 'success' : 'danger')
                     ->formatStateUsing(fn($state) => $state ? 'Tugatilgan' : 'Tugatilmagan'),
-                Tables\Columns\TextColumn::make('createdBy.name')
-                    ->label('Kim tomonidan yaratilgan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('updatedBy.name')
-                    ->label('Kim tomonidan o\'zgartirilgan')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

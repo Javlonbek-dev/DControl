@@ -46,12 +46,12 @@ class BxmResource extends Resource
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean()
                     ->label('BXM so\'mmasi hozir amaldami'),
-                Tables\Columns\TextColumn::make('createdBy.name')
-                    ->label('Kim tomonidan yaratilgan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('updatedBy.name')
-                    ->label('Kim tomonidan o\'zgartirilgan')
-                    ->searchable(),
+//                Tables\Columns\TextColumn::make('createdBy.name')
+//                    ->label('Kim tomonidan yaratilgan')
+//                    ->searchable(),
+//                Tables\Columns\TextColumn::make('updatedBy.name')
+//                    ->label('Kim tomonidan o\'zgartirilgan')
+//                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

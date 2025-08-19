@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('administrative_liabilities', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('gov_control_id')->constrained('gov_controls');
             $table->integer('number');
             $table->date('registration_date');
             $table->foreignId('decision_type_id')->nullable()->constrained('decision_types');
             $table->date('decision_date');
+            $table->date('court_date')->nullable();
             $table->float('imposed_fine');
             $table->boolean('is_paid');
             $table->foreignId('bxm_id')->nullable()->constrained('bxms');

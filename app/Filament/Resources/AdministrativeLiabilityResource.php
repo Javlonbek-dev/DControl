@@ -93,7 +93,6 @@ class AdministrativeLiabilityResource extends Resource
                             return "Ma'lumot yo‘q";
                         }
 
-                        // Deadline: court_date mavjud bo'lsa shu, bo'lmasa reg_date + 3 kun
                         $deadline = $record->court_date
                             ? Carbon::parse($record->court_date)
                             : Carbon::parse($record->registration_date)->copy()->addDays(3);
@@ -185,12 +184,6 @@ class AdministrativeLiabilityResource extends Resource
                     ->numeric()
                     ->label('Kasbi')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('createdBy.name')
-                    ->label('Kim tomonidan yaratilgan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('updatedBy.name')
-                    ->label('Kim tomonidan o\'zgartirilgan')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

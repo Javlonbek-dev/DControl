@@ -15,10 +15,10 @@ class NonConformityResource extends Resource
 {
     protected static ?string $model = NonConformity::class;
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
+//    public static function shouldRegisterNavigation(): bool
+//    {
+//        return false;
+//    }
     protected static ?string $pluralLabel = "Nomuvofiqliklar";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

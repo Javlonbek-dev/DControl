@@ -27,10 +27,10 @@ class ProfilaktikaResource extends Resource
 {
     protected static ?string $model = Profilaktika::class;
     protected static ?string $pluralLabel = "Profilaktikalar";
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
+//    public static function shouldRegisterNavigation(): bool
+//    {
+//        return false;
+//    }
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form

@@ -17,10 +17,10 @@ class AdministrativeCodeResource extends Resource
 {
     protected static ?string $model = AdministrativeCode::class;
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
+//    public static function shouldRegisterNavigation(): bool
+//    {
+//        return false;
+//    }
     protected static ?string $pluralLabel = "Ma'muriy javobgarlik to'g'risidagi kodeks";
     protected static ?string $navigationGroup = "Qonuniy Asoslar";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';

@@ -16,10 +16,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CertificateResource extends Resource
 {
     protected static ?string $model = Certificate::class;
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
+//    public static function shouldRegisterNavigation(): bool
+//    {
+//        return false;
+//    }
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = "Kamchiliklar turlari";
     protected static ?string $pluralLabel= "Sertifikat";

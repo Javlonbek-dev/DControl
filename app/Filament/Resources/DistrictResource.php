@@ -41,15 +41,15 @@ class DistrictResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('region_id')
+                Tables\Columns\TextColumn::make('region.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('createdBy.name')
-                    ->label('Kim tomonidan yaratilgan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('updatedBy.name')
-                    ->label('Kim tomonidan o\'zgartirilgan')
-                    ->searchable(),
+//                Tables\Columns\TextColumn::make('createdBy.name')
+//                    ->label('Kim tomonidan yaratilgan')
+//                    ->searchable(),
+//                Tables\Columns\TextColumn::make('updatedBy.name')
+//                    ->label('Kim tomonidan o\'zgartirilgan')
+//                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -16,10 +16,10 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
     protected static ?string $navigationGroup = "Kamchiliklar turlari";
     protected static ?string $pluralLabel = "Mahsulot";
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
+//    public static function shouldRegisterNavigation(): bool
+//    {
+//        return false;
+//    }
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
