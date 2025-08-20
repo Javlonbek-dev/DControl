@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class NonConformityResource extends Resource
@@ -33,13 +34,13 @@ class NonConformityResource extends Resource
                         'product' => 'Mahsulot',
                         'metrology' => 'Metrologiya',
                         'certificate' => 'Sertifikat',
+                        'service' => 'Xizmat',
                     ])
                     ->inline()
                     ->reactive(),
 
                 Forms\Components\Select::make('product_id')
                     ->relationship('product', 'name')
-                    ->searchable()
                     ->label('Mahsulot nomi')
                     ->visible(fn (callable $get) => $get('choice') === 'product'),
 
@@ -52,6 +53,10 @@ class NonConformityResource extends Resource
                     ->relationship('certificate', 'name')
                     ->label('Sertifikat')
                     ->visible(fn (callable $get) => $get('choice') === 'certificate'),
+                Forms\Components\Select::make('service_id')
+                    ->relationship('service', 'name')
+                    ->label('Xizmatlar')
+                    ->visible(fn (callable $get) => $get('choice') === 'service'),
 
                 Forms\Components\Select::make('normative_act_id')
                     ->relationship('normative_act', 'name')
@@ -84,6 +89,10 @@ class NonConformityResource extends Resource
                     ->numeric()
                     ->label('Sertifikat')
                     ->sortable(),
+                TextColumn::make('service.name')
+                    ->searchable()
+                    ->wrap()
+                    ->label('Xizmatlar'),
                 Tables\Columns\TextColumn::make('normative_act.name')
                     ->numeric()
                     ->wrap()

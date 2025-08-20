@@ -9,4 +9,21 @@ class WrittenDirective extends Model
 {
     protected $guarded = [];
     use Blameable;
+
+    public function non_conformity()
+    {
+        return $this->hasOne(NonConformity::class, 'written_directive_id', 'id');
+    }
+
+    public function orders()
+    {
+        return $this->hasManyThrough(
+            Order::class,
+            GovControl::class,
+            'id',          // GovControl primary key
+            'id',          // Order primary key
+            'id',          // AdministrativeLiability key
+            'order_id'     // GovControl foreign key to Order
+        );
+    }
 }

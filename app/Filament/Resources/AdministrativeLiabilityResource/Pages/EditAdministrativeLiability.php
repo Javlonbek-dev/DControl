@@ -22,7 +22,6 @@ class EditAdministrativeLiability extends EditRecord
     }
     protected function beforeSave(): void
     {
-        // DIQQAT: getRawState() => dehydrat qilinmagan maydonlarni ham qaytaradi
         $raw = $this->form->getRawState();
         \Log::info('RAW FORM STATE:', $raw);
 

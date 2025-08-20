@@ -6,12 +6,17 @@ use App\Filament\Resources\AdministrativeLiabilityResource\Pages;
 use App\Filament\Resources\AdministrativeLiabilityResource\RelationManagers;
 use App\Models\AdministrativeLiability;
 use App\Models\NonConformity;
+use App\Models\Order;
 use Carbon\Carbon;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Validation\ValidationException;
 
 class AdministrativeLiabilityResource extends Resource
 {
@@ -24,53 +29,104 @@ class AdministrativeLiabilityResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\TextInput::make('number')
+                    ->required()
+                    ->label("Ma'muriy bayonnoma nomeri"),
+
                 Forms\Components\DatePicker::make('registration_date')
                     ->required()
                     ->label('Registratsiya qilingan sana'),
+                Forms\Components\Select::make('order_id')
+                    ->label('Buyruq raqami')
+                    ->dehydrated(false)
+                    ->options(Order::pluck('number', 'id'))
+                    ->searchable()
+                    ->preload(),
                 Forms\Components\Select::make('decision_type_id')
                     ->label('Qaror turi')
+                    ->visible(Filament::auth()->user()->hasRole(['moderator']))
                     ->relationship('decision_type', 'name')
                     ->createOptionForm([
                         Forms\Components\TextInput::make('name')
                             ->required()
                     ]),
                 Forms\Components\DatePicker::make('decision_date')
-                    ->label('Sudni qaror sanasi'),
+                    ->label('Sudni qaror sanasi')
+                    ->visible(Filament::auth()->user()->hasRole(['moderator'])),
                 Forms\Components\MultiSelect::make('selected_nc_ids')
                     ->label('Non-conformities')
-                    ->options(
-                        \App\Models\NonConformity::with('product:id,name')
+                    ->options(function (Get $get) {
+                        $orderId = $get('order_id');
+                        if (!$orderId) return [];
+
+                        $byProduct = NonConformity::query()
+                            ->whereHas('product.gov_control', fn($q) => $q->where('order_id', $orderId))
+                            ->with('product:id,name')
                             ->get()
-                            ->mapWithKeys(fn ($nc) => [
-                                $nc->id => $nc->product?->name ?? "NC #{$nc->id}"
+                            ->mapWithKeys(fn($nc) => [
+                                $nc->id => ($nc->product?->name ? $nc->product->name . ' ' : '') . "(NC #{$nc->id})",
                             ])
-                            ->toArray()
-                    )
-                    ->statePath('selected_nc_ids')
-                    ->dehydrated(false)
-                    ->preload()
+                            ->toArray();
+
+                        $byMetrology = NonConformity::query()
+                            ->whereHas('metrology_instrument.gov_control', fn($q) => $q->where('order_id', $orderId))
+                            ->with('metrology_instrument:id,name')
+                            ->get()
+                            ->mapWithKeys(fn($nc) => [
+                                $nc->id => ($nc->metrology_instrument?->name ? $nc->metrology_instrument->name . ' ' : '') . "(NC #{$nc->id})",
+                            ])
+                            ->toArray();
+
+                        $byCertificate = NonConformity::query()
+                            ->whereHas('certificate.gov_control', fn($q) => $q->where('order_id', $orderId))
+                            ->with('certificate:id,name')
+                            ->get()
+                            ->mapWithKeys(fn($nc) => [
+                                $nc->id => ($nc->certificate?->name ? $nc->certificate->name . ' ' : '') . "(NC #{$nc->id})",
+                            ])
+                            ->toArray();
+                        $byServices = NonConformity::query()
+                            ->whereHas('service.gov_control', fn($q) => $q->where('order_id', $orderId))
+                            ->with('service:id,name')
+                            ->get()
+                            ->mapWithKeys(fn($nc) => [
+                                $nc->id => ($nc->service?->name ? $nc->service->name . ' ' : '') . "(NC #{$nc->id})",
+                            ])
+                            ->toArray();
+
+                        return array_filter([
+                            'Mahsulot' => $byProduct,
+                            'O‘lchov vositasi' => $byMetrology,
+                            'Sertifikat' => $byCertificate,
+                            'Xizmatlar' => $byServices
+                        ], fn($arr) => !empty($arr));
+                    })
                     ->searchable()
+                    ->preload()          // closure emas!
+                    ->reactive()
+                    ->dehydrated(false)  // DB ga yozmaymiz; o‘zimiz sync qilamiz
                     ->afterStateHydrated(function ($component, $state, $record) {
-                        if ($record) {
-                            $selected = \App\Models\NonConformity::where('administrative_liability_id', $record->id)
-                                ->pluck('id')
-                                ->all();
-                            $component->state($selected);
-                        }
+                        if (!$record) return;
+                        // Avval tanlangan NC larni record orqali yuklab beramiz
+                        $selected = \App\Models\NonConformity::where('administrative_liability_id', $record->id)
+                            ->pluck('id')
+                            ->all();
+                        $component->state($selected);
                     }),
                 Forms\Components\DatePicker::make('court_date')
                     ->label('Sudga kiritilgan sanasi'),
                 Forms\Components\TextInput::make('imposed_fine')
-                    ->required()
+                    ->visible(Filament::auth()->user()->hasRole(['moderator']))
                     ->label('Jarima miqdori')
                     ->numeric(),
                 Forms\Components\Toggle::make('is_paid')
-                    ->required()
+                    ->visible(Filament::auth()->user()->hasRole(['moderator']))
                     ->label('To\'langanmi'),
                 Forms\Components\Select::make('bxm_id')
                     ->required()
-                    ->label('Bxm qiymati')
-                    ->relationship('bxm', 'quantity'),
+                    ->relationship('bxm', 'quantity')
+                    ->disabled(fn($get) => $get('bxm.is_active' == true))
+                    ->label('Bxm qiymati'),
                 Forms\Components\TextInput::make('person_full_name')
                     ->required()
                     ->label('Ma\'muriy qo\'llangan shaxsni to\'liq F.I.SH')
@@ -175,26 +231,43 @@ class AdministrativeLiabilityResource extends Resource
 
                         return "Registratsiya: {$reg}\nOxirgi muddat (court_date): {$deadline}\nBugun: {$today}";
                     }),
-                Tables\Columns\TextColumn::make('decision_type.name')
-                    ->searchable()
-                    ->label('Qaror turi'),
+                Tables\Columns\TextColumn::make('decision_type_id')
+                    ->label('Sud qarorining turi')
+                    ->badge()
+                    ->state(fn($record) => $record->decision_type?->name ?? 'Sud qarori chiqarmagan')
+                    ->color(fn($record) => $record->decision_type_id ? 'success' : 'danger'),
+
                 Tables\Columns\TextColumn::make('decision_date')
-                    ->date('d-m-Y')
-                    ->label('Qaror sanasi')
-                    ->sortable(),
+                    ->label('Sud qarorining sanasi')
+                    ->sortable()
+                    ->badge()
+                    ->state(fn ($record) => $record->decision_date
+                        ? Carbon::parse($record->decision_date)->format('d-m-Y')
+                        : 'Sud qarori chiqarmagan'
+                    )
+                    ->color(fn ($record) => $record->decision_date ? 'success' : 'danger'),
                 Tables\Columns\TextColumn::make('imposed_fine')
-                    ->numeric()
-                    ->label('jarima miqdori (s\'om)')
-                    ->sortable(),
+                    ->label('Sud qo\'llagan jarima miqdori (s\'om)')
+                    ->sortable()
+                    ->badge()
+                    ->state(fn($record) => filled($record->imposed_fine)
+                        ? number_format($record->imposed_fine, 0, '.', ' ')
+                        : 'Sud qarori chiqarmagan'
+                    )
+                    ->color(fn($record) => filled($record->imposed_fine) ? 'success' : 'danger'),
+
                 Tables\Columns\TextColumn::make('is_paid')
                     ->label('To\'langanlik statusi')
                     ->badge()
-                    ->icon(fn($record) => $record->is_paid
-                        ? 'heroicon-o-check-circle'
-                        : 'heroicon-o-x-circle'
+                    ->icon(fn($record) => $record->is_paid ? 'heroicon-o-check-circle' : 'heroicon-o-x-circle')
+                    ->state(fn($record) => is_null($record->is_paid)
+                        ? 'Sud qarori chiqarmagan'
+                        : ($record->is_paid ? 'To\'langan' : 'To\'lanmagan')
                     )
-                    ->color(fn($record) => $record->is_paid ? 'success' : 'danger')
-                    ->formatStateUsing(fn($state) => $state ? 'To\'langan' : 'To\'lanmagan'),
+                    ->color(fn($record) => is_null($record->is_paid)
+                        ? 'danger'
+                        : ($record->is_paid ? 'success' : 'warning')
+                    ),
                 Tables\Columns\TextColumn::make('bxm.quantity')
                     ->sortable()
                     ->label('BXM miqdori'),
@@ -203,9 +276,11 @@ class AdministrativeLiabilityResource extends Resource
                     ->label('Ma\'muriy qo\'llangan shaxs'),
                 Tables\Columns\TextColumn::make('person_passport')
                     ->searchable()
+                    ->size('')
                     ->label('Pasport malumotlari'),
                 Tables\Columns\TextColumn::make('profession.name')
                     ->numeric()
+                    ->size('L')
                     ->label('Kasbi')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -221,6 +296,105 @@ class AdministrativeLiabilityResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('enterCourtDecision')
+                    ->label('Sud qarorlarini kiritish')
+                    ->icon('heroicon-m-scale')
+                    ->visible(fn($record) => blank($record->decision_type_id) || blank($record->decision_date))
+                    ->form([
+                        Forms\Components\Select::make('decision_type_id')
+                            ->label('Qaror turi')
+                            ->relationship('decision_type', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+
+                        Forms\Components\DatePicker::make('decision_date')
+                            ->label('Sud qarori sanasi')
+                            ->required(),
+
+                        Forms\Components\TextInput::make('imposed_fine')
+                            ->label('Jarima miqdori')
+                            ->numeric()
+                            ->required(),
+
+                        Forms\Components\Toggle::make('is_paid')
+                            ->label('To‘langanmi')
+                            ->default(false)
+                            ->required(),
+                    ])
+                    ->modalHeading('Sud qarorlarini kiritish')
+                    ->modalSubmitActionLabel('Saqlash')
+                    ->modalWidth('lg')
+                    ->action(function ($record, array $data) {
+                        $record->update($data);
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Sud qarorlari saqlandi')
+                            ->success()
+                            ->send();
+                    }),
+
+                //"Undirilgan so'mma"
+//                Tables\Actions\Action::make('enterPaidInfo')
+//                    ->label('Undirilgan summa')
+//                    ->icon('heroicon-m-banknotes')
+//                    ->modalHeading('Undirilgan summani kiritish')
+//                    ->modalSubmitActionLabel('Saqlash')
+//                    ->modalWidth('lg')
+//                    ->form([
+//                        Forms\Components\TextInput::make('imposed_fine')
+//                            ->label('Sud belgilagan jarima (so‘m)')
+//                            ->numeric()
+//                            ->minValue(0)
+//                            ->required()
+//                            ->default(fn ($record) => $record->imposed_fine),
+//
+//                        Forms\Components\TextInput::make('paid_amount')
+//                            ->label('Undirilgan summa (so‘m)')
+//                            ->numeric()
+//                            ->minValue(0)
+//                            ->default(fn ($record) => $record->paid_amount),
+//
+//                        Forms\Components\DatePicker::make('paid_date')
+//                            ->label('Undirilgan sana')
+//                            ->default(fn ($record) => $record->paid_date),
+//                    ])
+//                    ->action(function ($record, array $data) {
+//                        if (($data['is_paid'] ?? false) === true) {
+//                            if (empty($data['paid_amount'])) {
+//                                throw ValidationException::withMessages([
+//                                    'paid_amount' => 'Undirilgan summa shart.',
+//                                ]);
+//                            }
+//                            if (empty($data['paid_date'])) {
+//                                throw ValidationException::withMessages([
+//                                    'paid_date' => 'Undirilgan sana shart.',
+//                                ]);
+//                            }
+//                        }
+//
+//                        if (!empty($data['paid_amount']) && !empty($data['imposed_fine'])) {
+//                            if ((float) $data['paid_amount'] > (float) $data['imposed_fine']) {
+//                                throw ValidationException::withMessages([
+//                                    'paid_amount' => 'Undirilgan summa sud belgilagan jarimadan oshmasligi kerak.',
+//                                ]);
+//                            }
+//                        }
+//
+//                        $record->update([
+//                            'is_paid'      => (bool) ($data['is_paid'] ?? false),
+//                            'imposed_fine' => $data['imposed_fine'] ?? $record->imposed_fine,
+//                            'paid_amount'  => $data['paid_amount'] ?? null,
+//                            'paid_date'    => !empty($data['paid_date'])
+//                                ? Carbon::parse($data['paid_date'])->toDateString()
+//                                : null,
+//                        ]);
+
+//                        Notification::make()
+//                            ->title('Ma’lumotlar saqlandi')
+//                            ->success()
+//                            ->send();
+//                    }),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

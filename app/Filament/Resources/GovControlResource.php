@@ -56,23 +56,7 @@ class GovControlResource extends Resource
                     }),
                 Forms\Components\Toggle::make('is_finished')->default(false)
                     ->visible(fn () => auth()->user()?->hasRole('moderator'))
-                    ->label('Tekshiruv tugatildimi'),
-//                Forms\Components\Textarea::make('non_comformaty')
-//                    ->label('Kamchilik hulosasi'),
-//                Forms\Components\Toggle::make('is_zapret')->default(false)
-//                    ->label('Zapret')
-//                    ->reactive(),
-//                Forms\Components\Toggle::make('is_bartaraf')->default(false)
-//                    ->label('Bartarf')
-//                    ->reactive(),
-//                Forms\Components\DatePicker::make('zapret_date')
-//                    ->visible(fn(callable $get) => $get('is_zapret') === true),
-//                Forms\Components\TextInput::make('zapret_raqam')
-//                    ->visible(fn(callable $get) => $get('is_zapret') === true),
-//                Forms\Components\TextInput::make('bartaraf_raqam')
-//                    ->visible(fn(callable $get) => $get('is_bartaraf') === true),
-//                Forms\Components\DatePicker::make('bartaraf_date')
-//                    ->visible(fn(callable $get) => $get('is_bartaraf') === true),
+                    ->label('Tekshiruv tugatildimi')
             ])->columns(1);
     }
 

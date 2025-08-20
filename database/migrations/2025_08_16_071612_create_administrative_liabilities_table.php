@@ -23,6 +23,8 @@ return new class extends Migration
             $table->foreignId('bxm_id')->nullable()->constrained('bxms');
             $table->string('person_full_name');
             $table->string('person_passport');
+//            $table->decimal('paid_amount', 18, 2)->nullable();
+//            $table->date('paid_date')->nullable();
             $table->foreignId('profession_id')->nullable()->constrained('professions');
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
