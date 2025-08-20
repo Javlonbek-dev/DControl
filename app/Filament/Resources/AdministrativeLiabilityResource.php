@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\AdministrativeLiabilityResource\Pages;
 use App\Filament\Resources\AdministrativeLiabilityResource\RelationManagers;
 use App\Models\AdministrativeLiability;
+use App\Models\NonConformity;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -28,17 +29,40 @@ class AdministrativeLiabilityResource extends Resource
                     ->label('Registratsiya qilingan sana'),
                 Forms\Components\Select::make('decision_type_id')
                     ->label('Qaror turi')
-                    ->relationship('decision_type', 'name'),
+                    ->relationship('decision_type', 'name')
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                    ]),
                 Forms\Components\DatePicker::make('decision_date')
-                    ->label('Qaror sanasi'),
-                Forms\Components\Select::make('gov_control_id')
-                    ->label('Tekshiruv raqami')
-                    ->relationship('gov_control', 'number'),
+                    ->label('Sudni qaror sanasi'),
+                Forms\Components\MultiSelect::make('selected_nc_ids')
+                    ->label('Non-conformities')
+                    ->options(
+                        \App\Models\NonConformity::with('product:id,name')
+                            ->get()
+                            ->mapWithKeys(fn ($nc) => [
+                                $nc->id => $nc->product?->name ?? "NC #{$nc->id}"
+                            ])
+                            ->toArray()
+                    )
+                    ->statePath('selected_nc_ids')
+                    ->dehydrated(false)
+                    ->preload()
+                    ->searchable()
+                    ->afterStateHydrated(function ($component, $state, $record) {
+                        if ($record) {
+                            $selected = \App\Models\NonConformity::where('administrative_liability_id', $record->id)
+                                ->pluck('id')
+                                ->all();
+                            $component->state($selected);
+                        }
+                    }),
                 Forms\Components\DatePicker::make('court_date')
                     ->label('Sudga kiritilgan sanasi'),
                 Forms\Components\TextInput::make('imposed_fine')
                     ->required()
-                    ->label('jarima miqdori')
+                    ->label('Jarima miqdori')
                     ->numeric(),
                 Forms\Components\Toggle::make('is_paid')
                     ->required()

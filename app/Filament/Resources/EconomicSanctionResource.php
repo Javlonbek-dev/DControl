@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class EconomicSanctionResource extends Resource
 {
     protected static ?string $model = EconomicSanction::class;
-    protected static ?string $pluralLabel = "Moliyaviy Sanksiya";
+    protected static ?string $pluralLabel = "Moliyaviy Jarima";
     protected static ?string $navigationGroup = "Sanksiyaga oid malumotlar";
 
 
@@ -36,7 +36,7 @@ class EconomicSanctionResource extends Resource
                     ->numeric(),
                 Forms\Components\Select::make('court_id')
                     ->required()
-                    ->relationship('courts', 'name'),
+                    ->relationship('court.district', 'name'),
                 Forms\Components\DatePicker::make('decision_date')
                     ->required(),
                 Forms\Components\TextInput::make('decision_number')
@@ -44,7 +44,7 @@ class EconomicSanctionResource extends Resource
                     ->numeric(),
                 Forms\Components\Select::make('decision_type_id')
                     ->required()
-                    ->relationship('decision_types', 'name'),
+                    ->relationship('decision_type', 'name'),
                 Forms\Components\TextInput::make('imposed_fine')
                     ->required()
                     ->numeric(),
@@ -52,14 +52,10 @@ class EconomicSanctionResource extends Resource
                     ->required(),
                 Forms\Components\Select::make('sanction_id')
                     ->required()
-                    ->relationship('sanctions', 'name'),
+                    ->relationship('sanction', 'number'),
             ]);
     }
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
     public static function table(Table $table): Table
     {
         return $table

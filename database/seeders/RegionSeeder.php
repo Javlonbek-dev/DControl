@@ -21,13 +21,13 @@ class RegionSeeder extends Seeder
             "Farg‘ona viloyati",
             "Namangan viloyati",
             "Samarqand viloyati",
-            "Buxoro viloyati",
-            "Xorazm viloyati",
-            "Navoiy viloyati",
             "Qashqadaryo viloyati",
             "Surxondaryo viloyati",
-            "Jizzax viloyati",
+            "Buxoro viloyati",
+            "Navoiy viloyati",
+            "Xorazm viloyati",
             "Sirdaryo viloyati",
+            "Jizzax viloyati",
             "Qoraqalpog‘iston Respublikasi"
         ];
 

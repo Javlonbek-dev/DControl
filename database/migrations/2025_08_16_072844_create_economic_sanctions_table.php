@@ -17,11 +17,11 @@ return new class extends Migration
             $table->date('registration_date');
             $table->double('assessed_fine');
             $table->foreignId('court_id')->nullable()->constrained('courts');
-            $table->date('decision_date');
-            $table->integer('decision_number');
+            $table->date('decision_date')->nullable();
+            $table->integer('decision_number')->nullable();
             $table->foreignId('decision_type_id')->nullable()->constrained('decision_types');
-            $table->double('imposed_fine');
-            $table->boolean('is_paid');
+            $table->double('imposed_fine')->nullable();
+            $table->boolean('is_paid')->nullable();
             $table->foreignId('sanction_id')->nullable()->constrained('sanction_payment_requests');
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();

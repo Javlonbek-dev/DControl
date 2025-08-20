@@ -5,8 +5,12 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Filament\Resources\CompanyResource\RelationManagers;
 use App\Models\Company;
+use App\Models\District;
+use App\Models\Region;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -33,10 +37,31 @@ class CompanyResource extends Resource
                     ->required()
                     ->label('Tashkilot stiri')
                     ->maxLength(255),
+                Forms\Components\Select::make('region_id')
+                    ->label('Viloyat')
+                    ->options(fn () => Region::orderBy('name')->pluck('name', 'id')->toArray())
+                    ->searchable()
+                    ->preload()
+                    ->dehydrated(false) // << MUHIM: DBga yubormaydi
+                    ->reactive() // districtni qayta yuklash uchun
+                    ->afterStateUpdated(fn (Set $set) => $set('district_id', null)) // viloyat o'zgarsa tumanni tozalash
+                    ->required(),
+
                 Forms\Components\Select::make('district_id')
-                    ->required()
                     ->label('Tuman nomi')
-                    ->relationship('district', 'name'),
+                    ->options(fn (Get $get) =>
+                    blank($get('region_id'))
+                        ? []
+                        : District::where('region_id', $get('region_id'))
+                        ->orderBy('name')
+                        ->pluck('name', 'id')
+                        ->toArray()
+                    )
+                    ->searchable()
+                    ->preload()
+                    ->disabled(fn (Get $get) => blank($get('region_id')))
+                    ->required()
+                    ->rule('exists:districts,id'),
                 Forms\Components\Toggle::make('is_business')
                     ->required()
                     ->label('Tadbirkorlik subyectimi(Beznis ombudsman vakolatidagi tadbirkorlik subyecti)'),
@@ -55,11 +80,15 @@ class CompanyResource extends Resource
                     ->searchable()
                     ->label('Tashkilot stiri'),
                 Tables\Columns\TextColumn::make('district.name')
-                    ->numeric()
-                    ->label('Tuman nomi')
-                    ->sortable(),
+                    ->label('Tashkilot joylashgan hududi')
+                    ->state(function ($record) {
+                        return optional($record->district->region)->name
+                            . ', ' .
+                            optional($record->district)->name. ' tumani';
+                    }),
                 Tables\Columns\TextColumn::make('is_business')
                     ->searchable()
+                    ->formatStateUsing(fn ($state) => $state ? 'DT' : 'DN')
                     ->label('Tadbirkorlik subyektimi'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

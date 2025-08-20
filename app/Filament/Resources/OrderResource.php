@@ -4,10 +4,12 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers;
+use App\Models\Company;
 use App\Models\Order;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -24,14 +26,47 @@ class OrderResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('number')
+                Forms\Components\Select::make('company_id')
+                    ->label('Tashkilot nomi')
+                    ->relationship('company', 'name')
+                    ->searchable()
                     ->required()
-                    ->label('Buyruq nomeri')
-                    ->numeric(),
+                    ->reactive(),
+
+                Forms\Components\TextInput::make('number')
+                    ->label('Buyruq raqami')
+                    // ->numeric() // <-- buni olib tashlang, chunki saqlanadigan qiymat 'DT-123' bo'ladi
+                    ->required()
+                    // Formda faqat KO'RSATISH uchun prefix (qiymatga qo'shilmaydi)
+                    ->prefix(function (Get $get) {
+                        $companyId = $get('company_id');
+                        if (!$companyId) return null;
+                        $isBusiness = Company::whereKey($companyId)->value('is_business');
+                        return ($isBusiness ? 'DT' : 'DN') . ' - ';
+                    })
+                    // Edit holatida eski qiymatdan prefixni olib tashlab, faqat raqamni ko'rsatamiz:
+                    ->afterStateHydrated(function (callable $set, $state) {
+                        if (! empty($state)) {
+                            $clean = preg_replace('/^(DT|DN)\s*-\s*/i', '', (string) $state);
+                            $set('number', $clean);
+                        }
+                    })
+                    // Saqlashda yagona marta prefiksni biriktiramiz:
+                    ->dehydrateStateUsing(function ($state, Get $get) {
+                        $companyId = $get('company_id');
+                        if (!$companyId) return $state;
+
+                        $isBusiness = Company::whereKey($companyId)->value('is_business');
+                        $prefix = $isBusiness ? 'DT' : 'DN';
+
+                        // Agar foydalanuvchi tasodifan 'DT-123' yozib qo'ysa ham normalizatsiya qilamiz:
+                        $clean = preg_replace('/^(DT|DN)\s*-\s*/i', '', (string) $state);
+
+                        return $prefix . '-' . $clean;
+                    }),
                 Forms\Components\TextInput::make('ombudsman_code_number')
                     ->required()
-                    ->label('Ombudsmandan olingan raqam')
-                    ->numeric(),
+                    ->label('Ombudsmandan olingan raqam'),
                 Forms\Components\TextInput::make('control_days')
                     ->required()
                     ->label('Tekshiruv o\'tkaziladigan kunlar')
@@ -73,24 +108,6 @@ class OrderResource extends Resource
                         Forms\Components\Select::make('region_id')
                             ->relationship('region', 'name')
                     ]),
-                Forms\Components\Select::make('company_id')
-                    ->required()
-                    ->searchable()
-                    ->label('Tashkilot nomi')
-                    ->relationship('company', 'name')
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('name')
-                            ->label('Tashkilot nomi')
-                            ->required(),
-                        TextInput::make('stir')
-                            ->numeric()
-                            ->required(),
-                        Forms\Components\Select::make('district_id')
-                            ->relationship('district', 'name')
-                            ->searchable(),
-                        Forms\Components\Toggle::make('is_business')
-                            ->default(false)
-                    ]),
             ])->columns(1);
     }
 
@@ -98,6 +115,13 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('company.name')
+                    ->numeric()
+                    ->label('Tashkilot nomi')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('company.stir')
+                    ->label('Tashkilot stiri')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('number')
                     ->numeric()
                     ->label('Buyruq raqami')
@@ -112,32 +136,24 @@ class OrderResource extends Resource
                     ->sortable()
                     ->wrap(),
                 Tables\Columns\TextColumn::make('data_from')
-                    ->date()
+                    ->date('d-m-Y')
                     ->label('Tekshiruv boshlanadigan sana')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('data_to')
-                    ->date()
+                    ->date('d-m-Y')
                     ->label('Tekshiruv tugagan sana')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('period_from')
-                    ->date()
+                    ->date('d-m-Y')
                     ->label('Tekshiruv davrini boshlanishi')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('period_to')
-                    ->date()
+                    ->date('d-m-Y')
                     ->label('Tekshiruv davrini tugash sanasi')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('company_type.name')
                     ->numeric()
                     ->label('Faoliyat turi')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('district.name')
-                    ->numeric()
-                    ->label('Tuman')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('company.name')
-                    ->numeric()
-                    ->label('Tashkilot nomi')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

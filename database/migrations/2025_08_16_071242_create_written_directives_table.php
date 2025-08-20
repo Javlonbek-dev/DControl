@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('written_directives', function (Blueprint $table) {
             $table->id();
             $table->text('name');
+            $table->string('ban_number')->nullable();
+            $table->date('ban_date')->nullable();
+            $table->string('eliminate_number')->nullable();
+            $table->date('eliminate_date')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

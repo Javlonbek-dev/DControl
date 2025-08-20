@@ -21,7 +21,7 @@ class AdministrativeCodeResource extends Resource
 //    {
 //        return false;
 //    }
-    protected static ?string $pluralLabel = "Ma'muriy javobgarlik to'g'risidagi kodeks";
+    protected static ?string $pluralLabel = "Ma'muriy javobgarlik to'g'risidagi moddalar";
     protected static ?string $navigationGroup = "Qonuniy Asoslar";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -31,7 +31,7 @@ class AdministrativeCodeResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('article')
                     ->required()
-                    ->label('Ma\'muriy javobgarlik to\'g\'risidagi kodeks matni')
+                    ->label('Ma\'muriy javobgarlik to\'g\'risidagi kodeks moddasi')
                     ->maxLength(255),
                 Forms\Components\Select::make('normative_act_id')
                     ->relationship('normative_act', 'name')

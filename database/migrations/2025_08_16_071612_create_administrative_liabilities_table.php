@@ -16,10 +16,10 @@ return new class extends Migration
             $table->integer('number');
             $table->date('registration_date');
             $table->foreignId('decision_type_id')->nullable()->constrained('decision_types');
-            $table->date('decision_date');
+            $table->date('decision_date')->nullable();
             $table->date('court_date')->nullable();
-            $table->float('imposed_fine');
-            $table->boolean('is_paid');
+            $table->float('imposed_fine')->nullable();
+            $table->boolean('is_paid')->nullable();
             $table->foreignId('bxm_id')->nullable()->constrained('bxms');
             $table->string('person_full_name');
             $table->string('person_passport');

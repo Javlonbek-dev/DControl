@@ -15,7 +15,8 @@ class DatabaseSeeder extends Seeder
             [
                 RegionSeeder::class,
                 UserSeeder::class,
-                CompanyTypeSeeder::class
+                CompanyTypeSeeder::class,
+                DistrictSeeder::class
             ]
         );
     }

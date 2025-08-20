@@ -26,22 +26,33 @@ class NonConformityResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Radio::make('choice')
+                    ->label('Tanlang')
+                    ->dehydrated(false)
+                    ->options([
+                        'product' => 'Mahsulot',
+                        'metrology' => 'Metrologiya',
+                        'certificate' => 'Sertifikat',
+                    ])
+                    ->inline()
+                    ->reactive(),
+
                 Forms\Components\Select::make('product_id')
                     ->relationship('product', 'name')
+                    ->searchable()
                     ->label('Mahsulot nomi')
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('name')
-                            ->required(),
-                        Forms\Components\Select::make('gov_control_id')
-                            ->relationship('gov_control', 'number')
-                            ->required()
-                    ]),
+                    ->visible(fn (callable $get) => $get('choice') === 'product'),
+
                 Forms\Components\Select::make('metrology_instrument_id')
                     ->relationship('metrology_instrument', 'name')
-                    ->label('Metralogiya'),
+                    ->label('Metrologiya')
+                    ->visible(fn (callable $get) => $get('choice') === 'metrology'),
+
                 Forms\Components\Select::make('certificate_id')
                     ->relationship('certificate', 'name')
-                    ->label('Sertifikat'),
+                    ->label('Sertifikat')
+                    ->visible(fn (callable $get) => $get('choice') === 'certificate'),
+
                 Forms\Components\Select::make('normative_act_id')
                     ->relationship('normative_act', 'name')
                     ->label('Natmativ huquqiy asos')
@@ -49,29 +60,9 @@ class NonConformityResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->label('Huquqiy hujjat asosi')
                     ]),
-                Forms\Components\Select::make('written_directive_id')
-                    ->label('Yozama ko\'rsatma')
-                    ->relationship('written_directive', 'name')
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->label('Yozama ko\'rsatma matni'),
-                    ]),
-                Forms\Components\Select::make('administrative_liability_id')
-                    ->required()
-                    ->label('Mamuriy bayonnoma nomeri')
-                    ->relationship('administrative_liability', 'number'),
-                Forms\Components\Select::make('economic_sanction_id')
-                    ->required()
-                    ->label('Moliyaviy sanksiya')
-                    ->relationship('economic_sanction', 'number'),
-                Forms\Components\Select::make('sanction_payment_request_id')
-                    ->required()
-                    ->label('Moliyaviyga so\'lash uchun talabnoma')
-                    ->relationship('sanction', 'number'),
                 Forms\Components\Textarea::make('normative_documents')
                     ->required()
-                    ->label('Narmative hujjat')
+                    ->label('Normativ hujjat')
                     ->columnSpanFull(),
             ])->columns(1);
     }
@@ -83,7 +74,8 @@ class NonConformityResource extends Resource
                 Tables\Columns\TextColumn::make('product.name')
                     ->numeric()
                     ->label('Mahsulot nomi')
-                    ->sortable(),
+                    ->sortable()
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('metrology_instrument.name')
                     ->numeric()
                     ->label('Metralogiya')
@@ -92,32 +84,11 @@ class NonConformityResource extends Resource
                     ->numeric()
                     ->label('Sertifikat')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('normative.name')
+                Tables\Columns\TextColumn::make('normative_act.name')
                     ->numeric()
+                    ->wrap()
                     ->label('Natmativ huquqiy asos')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('written_directive.name')
-                    ->numeric()
-                    ->label('Yozma ko\'rsatma')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('administrative_liability.number')
-                    ->numeric()
-                    ->label('Mamuriy bayonnoma nomeri')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('economic_sanction_id')
-                    ->numeric()
-                    ->label('Moliyaviyga jarima')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('sanction_payment_request.number')
-                    ->numeric()
-                    ->label('Moliyaviyga qo\'lash uchun talabnoma')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('createdBy.name')
-                    ->label('Kim tomonidan yaratilgan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('updatedBy.name')
-                    ->label('Kim tomonidan o\'zgartirilgan')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

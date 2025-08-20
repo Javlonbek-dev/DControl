@@ -50,4 +50,9 @@ class NonConformity extends Model
     {
         return $this->belongsTo(SanctionPaymentRequest::class , 'sanction_payment_request_id');
     }
+
+    public function service()
+    {
+        return $this->belongsTo(Services::class, 'service_id');
+    }
 }

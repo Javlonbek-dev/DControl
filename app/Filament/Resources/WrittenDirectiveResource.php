@@ -32,6 +32,20 @@ class WrittenDirectiveResource extends Resource
                 Forms\Components\Textarea::make('name')
                     ->required()
                     ->columnSpanFull(),
+                Forms\Components\Toggle::make('is_ban')->default(false)
+                    ->label('Zapret')
+                    ->reactive(),
+                Forms\Components\Toggle::make('is_eliminate')->default(false)
+                    ->label('Bartarf')
+                    ->reactive(),
+                Forms\Components\DatePicker::make('ban_date')
+                    ->visible(fn(callable $get) => $get('is_ban') === true),
+                Forms\Components\TextInput::make('ban_raqam')
+                    ->visible(fn(callable $get) => $get('is_zapret') === true),
+                Forms\Components\TextInput::make('eliminate_number')
+                    ->visible(fn(callable $get) => $get('is_eliminate') === true),
+                Forms\Components\DatePicker::make('eliminate_date')
+                    ->visible(fn(callable $get) => $get('is_eliminate') === true),
             ]);
     }
 

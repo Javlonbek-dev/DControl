@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('number');
-            $table->integer('ombudsman_code_number');
+            $table->string('ombudsman_code_number');
             $table->integer('control_days');
             $table->date('data_from');
             $table->date('data_to');

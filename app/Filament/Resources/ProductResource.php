@@ -29,8 +29,8 @@ class ProductResource extends Resource
                 Forms\Components\Select::make('gov_control_id')
                     ->required()
                     ->searchable()
-                    ->relationship('gov_control', 'number')
-                    ->label('Tekshiruv raqami'),
+                    ->relationship('gov_control.order', 'number')
+                    ->label('Qaror raqami'),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->label('Mahsulot tavsifi haqida malumot')
@@ -42,11 +42,12 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('gov_control.number')
+                Tables\Columns\TextColumn::make('gov_control.order.number')
                     ->label('Tekshiruv raqami')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
+                    ->wrap()
                     ->label('Mahsulot tavsifi haqida malumot'),
                 Tables\Columns\TextColumn::make('createdBy.name')
                     ->label('Kim tomonidan yaratilgan')

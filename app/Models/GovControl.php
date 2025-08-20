@@ -17,8 +17,4 @@ class GovControl extends Model
         return $this->belongsTo(Order::class, 'order_id');
     }
 
-    public function administrative()
-    {
-        return $this->hasMany(AdministrativeLiability::class, 'gov_control_id');
-    }
 }

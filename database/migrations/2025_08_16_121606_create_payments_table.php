@@ -16,8 +16,9 @@ return new class extends Migration
             $table->foreignId('sanction_id')->nullable()->constrained('sanction_payment_requests');
             $table->foreignId('economic_sanction_id')->nullable()->constrained('economic_sanctions');
             $table->foreignId('administrative_liability_id')->nullable()->constrained('administrative_liabilities');
-            $table->date('paid_date');
-            $table->double('paid_ball');
+            $table->date('paid_date')->nullable();
+            $table->double('paid_ball')->nullable();
+            $table->double('payment_amount')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

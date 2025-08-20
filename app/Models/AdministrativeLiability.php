@@ -25,8 +25,8 @@ class AdministrativeLiability extends Model
         return $this->belongsTo(Profession::class, 'profession_id');
     }
 
-    public function gov_control()
+    public function non_conformity()
     {
-        return $this->belongsTo(GovControl::class, 'gov_control_id');
+        return $this->hasMany(NonConformity::class, 'administrative_liability_id', 'id');
     }
 }
