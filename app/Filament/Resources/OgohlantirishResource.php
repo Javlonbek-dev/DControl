@@ -24,10 +24,10 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class OgohlantirishResource extends Resource
 {
-//    public static function shouldRegisterNavigation(): bool
-//    {
-//        return false;
-//    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
     protected static ?string $model = Ogohlantirish::class;
 
     protected static ?string $pluralLabel= "Ogohlantirishlar";

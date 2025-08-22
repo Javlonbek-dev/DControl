@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('number');
             $table->date('registration_date');
             $table->double('assessed_fine');
-            $table->foreignId('court_id')->nullable()->constrained('courts');
+            $table->text('court_name')->nullable();
             $table->date('decision_date')->nullable();
             $table->integer('decision_number')->nullable();
             $table->foreignId('decision_type_id')->nullable()->constrained('decision_types');

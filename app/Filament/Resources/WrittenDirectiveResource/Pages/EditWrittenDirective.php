@@ -5,6 +5,7 @@ namespace App\Filament\Resources\WrittenDirectiveResource\Pages;
 use App\Filament\Resources\WrittenDirectiveResource;
 use App\Models\NonConformity;
 use Filament\Actions;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\DB;
 
@@ -14,10 +15,16 @@ class EditWrittenDirective extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\DeleteAction::make(),
-        ];
+        if (Filament::auth()->user()->hasRole('moderator')) {
+
+
+            return [
+                Actions\DeleteAction::make(),
+            ];
+        }
+        else return [];
     }
+
     protected function beforeSave(): void
     {
         $raw = $this->form->getRawState();

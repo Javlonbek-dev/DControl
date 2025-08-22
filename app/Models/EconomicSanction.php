@@ -11,11 +11,6 @@ class EconomicSanction extends Model
 
     protected $guarded;
 
-    public function court()
-    {
-        return $this->belongsTo(Court::class, 'court_id');
-    }
-
     public function decision_type()
     {
         return $this->belongsTo(DecisionType::class, 'decision_type_id');
@@ -23,7 +18,12 @@ class EconomicSanction extends Model
 
     public function sanction()
     {
-        return $this->belongsTo(SanctionPaymentRequest::class, 'sanction_payment_request_id');
+        return $this->belongsTo(SanctionPaymentRequest::class, 'sanction_id');
+    }
+
+    public function non_conformity()
+    {
+        return $this->hasMany(NonConformity::class, 'economic_sanction_id');
     }
 
 }

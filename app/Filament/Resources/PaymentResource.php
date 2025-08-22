@@ -31,16 +31,21 @@ class PaymentResource extends Resource
             ->schema([
                 Forms\Components\Select::make('sanction_id')
                     ->required()
+                    ->label('Moliyaviy talabnoma raqami')
                     ->relationship('sanction', 'number'),
                 Forms\Components\Select::make('economic_sanction_id')
                     ->required()
+                    ->label('Moliyaviy jarima raqami')
                     ->relationship('economic_sanction', 'number'),
                 Forms\Components\Select::make('administrative_liability_id')
+                    ->label('Mamuriy bayonnoma raqami')
                     ->relationship('administrative_liability', 'number'),
                 Forms\Components\DatePicker::make('paid_date')
-                    ->required(),
+                    ->required()
+                    ->label('To\'lov qilingan sanasi'),
                 Forms\Components\TextInput::make('paid_ball')
                     ->required()
+                    ->label('To\'lov so\'mmasi')
                     ->numeric(),
             ]);
     }
