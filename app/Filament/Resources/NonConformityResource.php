@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\NonConformityResource\Pages;
 use App\Filament\Resources\NonConformityResource\RelationManagers;
 use App\Models\NonConformity;
+use App\Models\NormativeAct;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -58,13 +59,25 @@ class NonConformityResource extends Resource
                     ->label('Xizmatlar')
                     ->visible(fn (callable $get) => $get('choice') === 'service'),
 
-                Forms\Components\Select::make('normative_act_id')
-                    ->relationship('normative_act', 'name')
-                    ->label('Natmativ huquqiy asos')
+                Forms\Components\Select::make('normative_act_ids')
+                    ->label('Normativ-huquqiy asos')
+                    ->multiple()
+                    ->preload()
+                    ->searchable()
+                    ->options(fn() => NormativeAct::orderBy('name')->pluck('name', 'id')->toArray())
                     ->createOptionForm([
                         Forms\Components\TextInput::make('name')
-                            ->label('Huquqiy hujjat asosi')
-                    ]),
+                            ->label('Huquqiy hujjat nomi')
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->createOptionUsing(function (array $data) {
+                        $act = NormativeAct::create(['name' => $data['name']]);
+                        return (string)$act->id; // Select shu id ni tanlovga qo‘shadi
+                    })
+                    // JSONga toza massiv yozilishi uchun:
+                    ->dehydrateStateUsing(fn($state) => array_map('intval', $state ?? []))
+                    ->default([]),
                 Forms\Components\Textarea::make('normative_documents')
                     ->required()
                     ->label('Normativ hujjat')

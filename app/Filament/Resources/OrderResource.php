@@ -7,7 +7,6 @@ use App\Filament\Resources\OrderResource\RelationManagers;
 use App\Models\Company;
 use App\Models\Order;
 use Filament\Forms;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
@@ -42,12 +41,12 @@ class OrderResource extends Resource
                         $companyId = $get('company_id');
                         if (!$companyId) return null;
                         $isBusiness = Company::whereKey($companyId)->value('is_business');
-                        return ($isBusiness ? 'DT' : 'DN') . ' - ';
+                        return ($isBusiness ? 'DN' : 'DT') . ' - ';
                     })
                     // Edit holatida eski qiymatdan prefixni olib tashlab, faqat raqamni ko'rsatamiz:
                     ->afterStateHydrated(function (callable $set, $state) {
                         if (! empty($state)) {
-                            $clean = preg_replace('/^(DT|DN)\s*-\s*/i', '', (string) $state);
+                            $clean = preg_replace('/^(DN|DT)\s*-\s*/i', '', (string) $state);
                             $set('number', $clean);
                         }
                     })
@@ -57,10 +56,10 @@ class OrderResource extends Resource
                         if (!$companyId) return $state;
 
                         $isBusiness = Company::whereKey($companyId)->value('is_business');
-                        $prefix = $isBusiness ? 'DT' : 'DN';
+                        $prefix = $isBusiness ? 'DN' : 'DT';
 
                         // Agar foydalanuvchi tasodifan 'DT-123' yozib qo'ysa ham normalizatsiya qilamiz:
-                        $clean = preg_replace('/^(DT|DN)\s*-\s*/i', '', (string) $state);
+                        $clean = preg_replace('/^(DN|DT)\s*-\s*/i', '', (string) $state);
 
                         return $prefix . '-' . $clean;
                     }),

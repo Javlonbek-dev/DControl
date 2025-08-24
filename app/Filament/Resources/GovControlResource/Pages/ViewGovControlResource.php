@@ -9,10 +9,17 @@ use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Database\Query\Builder;
 
 class ViewGovControlResource extends ViewRecord
 {
     protected static string $resource = GovControlResource::class;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['product', 'certificate', 'metrology_instrument', 'service']);
+    }
 
     public function infolist(Infolist $infolist): Infolist
     {
@@ -21,30 +28,32 @@ class ViewGovControlResource extends ViewRecord
                 Section::make('Tekshiruv ma’lumotlari')
                     ->schema([
                         TextEntry::make('order.company.name')
-                            ->label('Tashkilot nomi'),
+                            ->label('Tashkilot nomi:'),
+                        TextEntry::make('order.company.stir')
+                            ->label('Tashkilot stiri:'),
                         TextEntry::make('order.company.district.name')
-                            ->label('Tashkilot joylashgan hududi')
+                            ->label('Tashkilot joylashgan hududi:')
                             ->state(function ($record) {
                                 return optional($record->order->company->district->region)->name
                                     . ' ' .
                                     optional($record->order->company->district)->name;
                             }),
                         TextEntry::make('order.number')
-                            ->label('Buyruq raqami'),
+                            ->label('Buyruq raqami:'),
 
                         TextEntry::make('number')
-                            ->label('Tekshiruv raqami'),
+                            ->label('Tekshiruv raqami:'),
 
                         TextEntry::make('real_date_from')
-                            ->date()
-                            ->label('Tekshiruvni boshlanish sanasi'),
+                            ->date('d-m-Y')
+                            ->label('Tekshiruvni boshlanish sanasi:'),
 
                         TextEntry::make('real_date_to')
-                            ->date()
-                            ->label('Tekshiruvni tugatish sanasi'),
+                            ->date('d-m-Y')
+                            ->label('Tekshiruvni tugatish sanasi:'),
 
                         TextEntry::make('is_finished')
-                            ->label('Tekshiruv tugatilganmi')
+                            ->label('Tekshiruv tugatilganmi:')
                             ->badge()
                             ->icon(fn($state) => $state
                                 ? 'heroicon-o-check-circle'
@@ -54,19 +63,28 @@ class ViewGovControlResource extends ViewRecord
                             ->formatStateUsing(fn($state) => $state ? 'Tugatilgan' : 'Tugatilmagan'),
                     ])
                     ->columns(2),
-                        RepeatableEntry::make('administrative') // hasMany relation nomi
-                        ->label('Ma’muriy javobgarliklar')
+                RepeatableEntry::make('deficiency_items')
+                    ->label('Kamchilik turlari:')
+                    ->state(fn($record) => $record->deficiency_items->all()) // accessor’dan keladi
+                    ->schema([
+                        TextEntry::make('type')->label('Tur:'),
+                        TextEntry::make('name')->label('Nomi:'),
+                    ]),
+
+
+                RepeatableEntry::make('administrative') // hasMany relation nomi
+                        ->label('Ma’muriy javobgarliklar:')
                             ->schema([
                                 TextEntry::make('registration_date')
                                     ->date('d-m-Y')
-                                    ->label('Registratsiya qilingan sana'),
+                                    ->label('Registratsiya qilingan sana:'),
 
                                 TextEntry::make('court_date')
                                     ->date('d-m-Y')
-                                    ->label('Sudga kiritilgan sanasi'),
+                                    ->label('Sudga kiritilgan sanasi:'),
 
                                 TextEntry::make('deadline_status')
-                                    ->label('Sudga topshirish muddati')
+                                    ->label('Sudga topshirish muddati:')
                                     ->badge()
                                     ->state(function ($record) {
                                         if (!$record->registration_date && !$record->court_date) {

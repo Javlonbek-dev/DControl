@@ -7,6 +7,7 @@ use App\Filament\Resources\AdministrativeLiabilityResource\RelationManagers;
 use App\Models\AdministrativeLiability;
 use App\Models\NonConformity;
 use App\Models\Order;
+use App\Models\Payment;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Filament\Forms;
@@ -16,6 +17,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class AdministrativeLiabilityResource extends Resource
@@ -158,6 +160,8 @@ class AdministrativeLiabilityResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('order.company.name')
+                    ->label('Tashkilot nomi'),
                 Tables\Columns\TextColumn::make('registration_date')
                     ->date('d-m-Y')
                     ->label('Registratsiya qilingan sana')
@@ -281,7 +285,7 @@ class AdministrativeLiabilityResource extends Resource
                 Tables\Columns\TextColumn::make('profession.name')
                     ->numeric()
                     ->size('L')
-                    ->label('Kasbi')
+                    ->label('Lavozimi')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -334,67 +338,87 @@ class AdministrativeLiabilityResource extends Resource
                             ->send();
                     }),
 
-                //"Undirilgan so'mma"
-//                Tables\Actions\Action::make('enterPaidInfo')
-//                    ->label('Undirilgan summa')
-//                    ->icon('heroicon-m-banknotes')
-//                    ->modalHeading('Undirilgan summani kiritish')
-//                    ->modalSubmitActionLabel('Saqlash')
-//                    ->modalWidth('lg')
-//                    ->form([
-//                        Forms\Components\TextInput::make('imposed_fine')
-//                            ->label('Sud belgilagan jarima (so‘m)')
-//                            ->numeric()
-//                            ->minValue(0)
-//                            ->required()
-//                            ->default(fn ($record) => $record->imposed_fine),
-//
-//                        Forms\Components\TextInput::make('paid_amount')
-//                            ->label('Undirilgan summa (so‘m)')
-//                            ->numeric()
-//                            ->minValue(0)
-//                            ->default(fn ($record) => $record->paid_amount),
-//
-//                        Forms\Components\DatePicker::make('paid_date')
-//                            ->label('Undirilgan sana')
-//                            ->default(fn ($record) => $record->paid_date),
-//                    ])
-//                    ->action(function ($record, array $data) {
-//                        if (($data['is_paid'] ?? false) === true) {
-//                            if (empty($data['paid_amount'])) {
-//                                throw ValidationException::withMessages([
-//                                    'paid_amount' => 'Undirilgan summa shart.',
-//                                ]);
-//                            }
-//                            if (empty($data['paid_date'])) {
-//                                throw ValidationException::withMessages([
-//                                    'paid_date' => 'Undirilgan sana shart.',
-//                                ]);
-//                            }
-//                        }
-//
-//                        if (!empty($data['paid_amount']) && !empty($data['imposed_fine'])) {
-//                            if ((float) $data['paid_amount'] > (float) $data['imposed_fine']) {
-//                                throw ValidationException::withMessages([
-//                                    'paid_amount' => 'Undirilgan summa sud belgilagan jarimadan oshmasligi kerak.',
-//                                ]);
-//                            }
-//                        }
-//
-//                        $record->update([
-//                            'is_paid'      => (bool) ($data['is_paid'] ?? false),
-//                            'imposed_fine' => $data['imposed_fine'] ?? $record->imposed_fine,
-//                            'paid_amount'  => $data['paid_amount'] ?? null,
-//                            'paid_date'    => !empty($data['paid_date'])
-//                                ? Carbon::parse($data['paid_date'])->toDateString()
-//                                : null,
-//                        ]);
+                // "Undirilgan so'mma"
+                Tables\Actions\Action::make('enterPaidInfo')
+                    ->label('Undirilgan summa')
+                    ->icon('heroicon-m-banknotes')
+                    ->modalHeading('Undirilgan summani kiritish')
+                    ->modalSubmitActionLabel('Saqlash')
+                    ->modalWidth('lg')
+                    ->visible(fn($record) => $record?->imposed_fine > 0 && $record->remaining > 0)
+                    ->form([
+                        Forms\Components\TextInput::make('imposed_fine_view')
+                            ->label('Sud belgilagan jarima (so‘m)')
+                            ->default(fn($record) => (int)$record->imposed_fine)
+                            ->disabled()
+                            ->dehydrated(false), // <-- Muhim!
 
-//                        Notification::make()
-//                            ->title('Ma’lumotlar saqlandi')
-//                            ->success()
-//                            ->send();
-//                    }),
+                        Forms\Components\TextInput::make('paid_total_view')
+                            ->label('Hozirgacha undirildi (so‘m)')
+                            ->default(fn($record) => (int)$record->paid_total)
+                            ->disabled()
+                            ->dehydrated(false), // <-- Muhim!
+
+                        Forms\Components\TextInput::make('remaining_view')
+                            ->label('Qolgan (so‘m)')
+                            ->default(fn($record) => (int)$record->remaining)
+                            ->disabled()
+                            ->dehydrated(false), // <-- Muhim!
+
+                        Forms\Components\TextInput::make('payment_amount')
+                            ->label('Ushbu to‘lov summasi (so‘m)')
+                            ->numeric()
+                            ->minValue(1)
+                            ->required(),
+
+                        Forms\Components\DatePicker::make('paid_date')
+                            ->label('To‘langan sana')
+                            ->default(now()->toDateString())
+                            ->required(),
+                    ])
+                    ->action(function ($record, array $data) {
+                        // imposed_fine-ni faqat rekorddan olamiz — formdan emas
+                        $imposed = (float)$record->imposed_fine;
+                        $paidTotalBefore = (float)$record->payments()->sum('payment_amount');
+
+                        $remaining = max(0, $imposed - $paidTotalBefore);
+                        $amount = (float)($data['payment_amount'] ?? 0);
+
+                        if ($amount <= 0) {
+                            throw ValidationException::withMessages([
+                                'payment_amount' => 'To‘lov summasi musbat bo‘lishi kerak.',
+                            ]);
+                        }
+                        if ($amount > $remaining) {
+                            throw ValidationException::withMessages([
+                                'payment_amount' => 'Kiritilgan summa qolgan qarzdan oshmasligi kerak.',
+                            ]);
+                        }
+
+                        // Yangi to‘lovni payments jadvaliga yozamiz
+                        Payment::create([
+                            'administrative_liability_id' => $record->id,
+                            'paid_date' => Carbon::parse($data['paid_date'])->toDateString(),
+                            'payment_amount' => $amount,
+                            'created_by' => Auth::id(),
+                            'updated_by' => Auth::id(),
+                        ]);
+
+                        // Holatni yangilash (to‘liq yopildimi?)
+                        $paidTotalAfter = (float)$record->payments()->sum('payment_amount');
+                        $isFullyPaid = $paidTotalAfter >= $imposed && $imposed > 0;
+
+                        $record->update([
+                            'is_paid' => $isFullyPaid, // imposed_fine-ni HECH QACHON o‘zgartirmaymiz!
+                        ]);
+
+                        Notification::make()
+                            ->title('To‘lov saqlandi')
+                            ->body('Qolgan summa: ' . number_format(max(0, $imposed - $paidTotalAfter), 0, '.', ' '))
+                            ->success()
+                            ->send();
+                    }),
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -417,6 +441,7 @@ class AdministrativeLiabilityResource extends Resource
             'index' => Pages\ListAdministrativeLiabilities::route('/'),
             'create' => Pages\CreateAdministrativeLiability::route('/create'),
             'edit' => Pages\EditAdministrativeLiability::route('/{record}/edit'),
+            'view' => Pages\ViewAdministrativeLiability::route('/{record}'),
         ];
     }
 }

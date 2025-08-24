@@ -11,6 +11,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -37,26 +38,9 @@ class GovControlResource extends Resource
                 Forms\Components\DatePicker::make('real_date_from')
                     ->required()
                     ->label('Tilxat olingan sana')
-                    ->live(debounce: 0)
-                    ->afterStateUpdated(function (Set $set, $state) {
-                        if ($state) {
-                            $set('real_date_to', Carbon::parse($state)->addDays(10)->format('Y-m-d'));
-                        } else {
-                            $set('real_date_to', null);
-                        }
-                    }),
-
-                Forms\Components\DatePicker::make('real_date_to')
-                    ->readOnly()
-                    ->label('Tekshiruvni tugatish sanasi')
-                    ->afterStateHydrated(function (Get $get, Set $set, $state) {
-                        if (!$state && $get('real_date_from')) {
-                            $set('real_date_to', Carbon::parse($get('real_date_from'))->addDays(10)->format('Y-m-d'));
-                        }
-                    }),
-                Forms\Components\Toggle::make('is_finished')->default(false)
-                    ->visible(fn () => auth()->user()?->hasRole('moderator'))
-                    ->label('Tekshiruv tugatildimi')
+//                Forms\Components\Toggle::make('is_finished')->default(false)
+//                    ->visible(fn () => auth()->user()?->hasRole('moderator'))
+//                    ->label('Tekshiruv tugatildimi')
             ])->columns(1);
     }
 
@@ -104,6 +88,66 @@ class GovControlResource extends Resource
                 //
             ])
             ->actions([
+                // ✅ Tugatildi
+                Tables\Actions\Action::make('finish')
+                    ->label('Tugatildi')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn ($record) => ! $record->is_finished) // faqat tugallanmaganlarda
+                    ->requiresConfirmation()
+                    ->form([
+                        Forms\Components\DatePicker::make('finished_at')
+                            ->label('Tugatish sanasi')
+                            ->default(now()->toDateString())
+                            ->required(),
+                    ])
+                    ->action(function ($record, array $data) {
+                        $date = !empty($data['finished_at'])
+                            ? Carbon::parse($data['finished_at'])->toDateString()
+                            : now()->toDateString();
+
+                        $record->update([
+                            'is_finished'   => true,
+                            'real_date_to'  => $date,   // tugatish sanasini real_date_to ga yozamiz
+                            'updated_by'    => auth()->id(),
+                        ]);
+
+                        Notification::make()
+                            ->title('Tekshiruv tugatildi')
+                            ->success()
+                            ->send();
+                    }),
+
+                // ♻️ Qayta ochish
+                Tables\Actions\Action::make('reopen')
+                    ->label('Qayta ochish')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('warning')
+
+                    // 1) Faqat tugallangan yozuvda va moderatorga ko‘rinadi:
+                    ->visible(fn ($record) =>
+                        $record->is_finished && auth()->user()?->hasRole('moderator')
+                    )
+
+                    // (ixtiyoriy, Filament v3 da bor) — ruxsatni action darajasida ham tekshiradi:
+                    ->authorize(fn () => auth()->user()?->hasRole('moderator'))
+
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        // 2) Backend guard — to‘g‘ridan-to‘g‘ri URL/JS’dan chaqirilsa ham to‘xtatadi:
+                        abort_unless(auth()->user()?->hasRole('moderator'), 403);
+
+                        $record->update([
+                            'is_finished'  => false,
+                            'real_date_to' => null,
+                            'updated_by'   => auth()->id(),
+                        ]);
+
+                        Notification::make()
+                            ->title('Tekshiruv qayta ochildi')
+                            ->success()
+                            ->send();
+                    }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])

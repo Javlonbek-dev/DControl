@@ -14,7 +14,7 @@ class SanctionPaymentRequest extends Model
     {
         return $this->hasMany(NonConformity::class, 'sanction_payment_request_id', 'id');
     }
-    public function orders()
+    public function order()
     {
         return $this->hasManyThrough(
             Order::class,

@@ -88,7 +88,7 @@ class CompanyResource extends Resource
                     }),
                 Tables\Columns\TextColumn::make('is_business')
                     ->searchable()
-                    ->formatStateUsing(fn ($state) => $state ? 'DT' : 'DN')
+                    ->formatStateUsing(fn ($state) => $state ? 'DN' : 'DT')
                     ->label('Tadbirkorlik subyektimi'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

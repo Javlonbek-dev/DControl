@@ -30,7 +30,7 @@ class ProductResource extends Resource
                     ->required()
                     ->searchable()
                     ->relationship('gov_control.order', 'number')
-                    ->label('Qaror raqami'),
+                    ->label('Buyruq raqami'),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->label('Mahsulot tavsifi haqida malumot')
@@ -43,7 +43,7 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('gov_control.order.number')
-                    ->label('Tekshiruv raqami')
+                    ->label('Buyruq raqami')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()

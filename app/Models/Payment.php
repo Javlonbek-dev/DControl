@@ -25,4 +25,12 @@ class Payment extends Model
     {
         return $this->belongsTo(AdministrativeLiability::class , 'administrative_liability_id');
     }
+    public function getCompanyNameAttribute(): ?string
+    {
+        return $this->administrativeLiability?->order?->company?->name
+            ?? $this->economicSanction?->order?->company?->name   // agar EconomicSanction bevosita company() bo'lsa, .order?->company? o'rniga ->company? qiling
+            ?? $this->sanction?->order?->company?->name
+            ?? null;
+    }
+
 }

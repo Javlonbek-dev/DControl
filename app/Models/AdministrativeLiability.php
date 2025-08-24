@@ -40,4 +40,36 @@ class AdministrativeLiability extends Model
             'order_id'     // GovControl foreign key to Order
         );
     }
+
+    public function order()
+    {
+        return $this->hasManyThrough(
+            Order::class,
+            GovControl::class,
+            'id',          // GovControl primary key
+            'id',          // Order primary key
+            'id',          // AdministrativeLiability key
+            'order_id'     // GovControl foreign key to Order
+        );
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function getPaidTotalAttribute(): float
+    {
+        return (float) $this->payments()->sum('payment_amount');
+    }
+
+    public function getRemainingAttribute(): float
+    {
+        return max(0, ((float) $this->imposed_fine) - $this->paid_total);
+    }
+
+    public function getIsFullyPaidAttribute(): bool
+    {
+        return $this->paid_total >= (float) $this->imposed_fine && $this->imposed_fine > 0;
+    }
 }

@@ -15,4 +15,13 @@ class Company extends Model
     {
         return $this->belongsTo(District::class, 'district_id');
     }
+    public function scopeBusiness($q)
+    {
+        return $q->whereIn('is_business', ['1','true']);
+    }
+
+    public function scopeState($q)
+    {
+        return $q->whereIn('is_business', ['0','false']);
+    }
 }

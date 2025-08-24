@@ -18,6 +18,18 @@ class PaymentResource extends Resource
     protected static ?string $model = Payment::class;
     protected static ?string $pluralLabel = "To'lovlar";
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()->with([
+            'administrative_liability.order.company',
+            'administrative_liability.orders.company',
+            'economic_sanction.order.company',
+            'economic_sanction.orders.company',
+//            'economic_sanction.company',
+            'sanction.company',
+        ]);
+    }
+
     protected static ?string $navigationGroup = "Sanksiyaga oid malumotlar";
 //    public static function shouldRegisterNavigation(): bool
 //    {
@@ -54,19 +66,55 @@ class PaymentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('sanction_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('economic_sanction_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('administrative_liability_id')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('company_fallback')
+                    ->label('Tashkilot nomi')
+                    ->getStateUsing(function ($record) {
+                        // 1) Administrative liability yo‘li:
+                        $name =
+                            // belongsTo: order -> company
+//                            $record->administrative_liability?->order?->company?->name
+                            // hasMany: orders -> first() -> company
+                             $record->administrative_liability?->orders?->first()?->company?->name
+
+                            // 2) Economic sanction yo‘li:
+//                            ?? $record->economic_sanction?->order?->company?->name
+                            ?? $record->economic_sanction?->orders?->first()?->company?->name
+                            // ba’zan economic_sanction bevosita company() bo‘lishi mumkin
+//                            ?? $record->economic_sanction?->company?->name
+
+                            // 3) Sanction request yo‘li:
+                            ?? $record->sanction?->orders?->first()->company?->name;
+
+                        return $name;
+                    })
+                    ->searchable(query: function (Builder $query, string $search) {
+                        // Postgres bo‘lsa ILIKE qulay; MySQL/MariaDB bo‘lsa LIKE ishlating
+                        $cmp = fn($q) => $q->where('name', 'ilike', "%{$search}%");
+
+                        $query
+                            // admin liability
+                            ->whereHas('administrative_liability.order.company', $cmp)
+                            ->orWhereHas('administrative_liability.orders', fn ($q) => $q->whereHas('company', $cmp))
+
+                            // economic sanction
+                            ->orWhereHas('economic_sanction.order.company', $cmp)
+                            ->orWhereHas('economic_sanction.orders', fn ($q) => $q->whereHas('company', $cmp))
+                            ->orWhereHas('economic_sanction.company', $cmp)
+
+                            // sanction payment request
+                            ->orWhereHas('sanction.company', $cmp);
+                    }),
+
+//                 Tables\Columns\TextColumn::make('sanction_id')
+//                    ->numeric()
+//                    ->sortable(),
+//                Tables\Columns\TextColumn::make('economic_sanction_id')
+//                    ->numeric()
+//                    ->sortable(),
                 Tables\Columns\TextColumn::make('paid_date')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('paid_ball')
+                Tables\Columns\TextColumn::make('payment_amount')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('createdBy.name')

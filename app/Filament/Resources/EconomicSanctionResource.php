@@ -7,14 +7,18 @@ use App\Filament\Resources\EconomicSanctionResource\RelationManagers;
 use App\Models\EconomicSanction;
 use App\Models\NonConformity;
 use App\Models\Order;
+use App\Models\Payment;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class EconomicSanctionResource extends Resource
 {
@@ -247,6 +251,85 @@ class EconomicSanctionResource extends Resource
                             ->send();
                     }),
 
+                // "Undirilgan so'mma"
+                Tables\Actions\Action::make('enterPaidInfo')
+                    ->label('Undirilgan summa')
+                    ->icon('heroicon-m-banknotes')
+                    ->modalHeading('Undirilgan summani kiritish')
+                    ->modalSubmitActionLabel('Saqlash')
+                    ->modalWidth('lg')
+                    ->visible(fn($record) => $record?->imposed_fine > 0 && $record->remaining > 0)
+                    ->form([
+                        Forms\Components\TextInput::make('imposed_fine_view')
+                            ->label('Sud belgilagan jarima (so‘m)')
+                            ->default(fn($record) => (int)$record->imposed_fine)
+                            ->disabled()
+                            ->dehydrated(false), // <-- Muhim!
+
+                        Forms\Components\TextInput::make('paid_total_view')
+                            ->label('Hozirgacha undirildi (so‘m)')
+                            ->default(fn($record) => (int)$record->paid_total)
+                            ->disabled()
+                            ->dehydrated(false), // <-- Muhim!
+
+                        Forms\Components\TextInput::make('remaining_view')
+                            ->label('Qolgan (so‘m)')
+                            ->default(fn($record) => (int)$record->remaining)
+                            ->disabled()
+                            ->dehydrated(false), // <-- Muhim!
+
+                        Forms\Components\TextInput::make('payment_amount')
+                            ->label('Ushbu to‘lov summasi (so‘m)')
+                            ->numeric()
+                            ->minValue(1)
+                            ->required(),
+
+                        Forms\Components\DatePicker::make('paid_date')
+                            ->label('To‘langan sana')
+                            ->default(now()->toDateString())
+                            ->required(),
+                    ])
+                    ->action(function ($record, array $data) {
+                        $imposed = (float)$record->imposed_fine;
+                        $paidTotalBefore = (float)$record->payments()->sum('payment_amount');
+
+                        $remaining = max(0, $imposed - $paidTotalBefore);
+                        $amount = (float)($data['payment_amount'] ?? 0);
+
+                        if ($amount <= 0) {
+                            throw ValidationException::withMessages([
+                                'payment_amount' => 'To‘lov summasi musbat bo‘lishi kerak.',
+                            ]);
+                        }
+                        if ($amount > $remaining) {
+                            throw ValidationException::withMessages([
+                                'payment_amount' => 'Kiritilgan summa qolgan qarzdan oshmasligi kerak.',
+                            ]);
+                        }
+
+                        // Yangi to‘lovni payments jadvaliga yozamiz
+                        Payment::create([
+                            'economic_sanction_id' => $record->id,
+                            'paid_date' => Carbon::parse($data['paid_date'])->toDateString(),
+                            'payment_amount' => $amount,
+                            'created_by' => Auth::id(),
+                            'updated_by' => Auth::id(),
+                        ]);
+
+                        // Holatni yangilash (to‘liq yopildimi?)
+                        $paidTotalAfter = (float)$record->payments()->sum('payment_amount');
+                        $isFullyPaid = $paidTotalAfter >= $imposed && $imposed > 0;
+
+                        $record->update([
+                            'is_paid' => $isFullyPaid, // imposed_fine-ni HECH QACHON o‘zgartirmaymiz!
+                        ]);
+
+                        Notification::make()
+                            ->title('To‘lov saqlandi')
+                            ->body('Qolgan summa: ' . number_format(max(0, $imposed - $paidTotalAfter), 0, '.', ' '))
+                            ->success()
+                            ->send();
+                    }),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

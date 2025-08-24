@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('metrology_instrument_id')->nullable()->constrained('metrology_instruments');
             $table->foreignId('certificate_id')->nullable()->constrained('certificates');
             $table->foreignId('service_id')->nullable()->constrained('services');
-            $table->foreignId('normative_act_id')->nullable()->constrained('normative_acts');
+            $table->json('normative_act_id')->nullable();
             $table->foreignId('written_directive_id')->nullable()->constrained('written_directives');
             $table->foreignId('administrative_liability_id')->nullable()->constrained('administrative_liabilities');
             $table->foreignId('economic_sanction_id')->nullable()->constrained('economic_sanctions');

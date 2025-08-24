@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class NonConformity extends Model
 {
     use Blameable;
+    protected $casts =['normative_act_id'=>'array'];
 
     protected $guarded = [];
 
@@ -29,6 +30,17 @@ class NonConformity extends Model
     public function normative_act()
     {
         return $this->belongsTo(NormativeAct::class, 'normative_act_id');
+    }
+    public function getNormativeActNamesAttribute(): array
+    {
+        $ids = $this->normative_act_ids ?? [];
+        if (empty($ids)) return [];
+        return \App\Models\NormativeAct::whereIn('id', $ids)->pluck('name')->all();
+    }
+
+    public function scopeHasNormativeAct($q, int $actId)
+    {
+        return $q->whereJsonContains('normative_act_ids', $actId);
     }
 
     public function written_directive()
