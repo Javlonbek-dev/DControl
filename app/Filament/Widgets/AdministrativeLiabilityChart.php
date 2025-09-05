@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class AdministrativeLiabilityChart extends ChartWidget
 {
-    protected static ?string $heading = "Ma'muriy javobgarlik";
+    protected static ?string $heading = "Jarimalar";
     protected int|string|array $columnSpan = 'full';
     protected static ?string $maxHeight = '360px'; // ba'zida 0px bo'lib qolmasin
 

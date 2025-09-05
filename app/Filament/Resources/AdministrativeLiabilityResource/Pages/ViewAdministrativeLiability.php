@@ -105,7 +105,9 @@ class ViewAdministrativeLiability extends ViewRecord
                 ->label('Kamchilik turlari:')
                 ->schema([
                     TextEntry::make('product.name'),
-//                    TextEntry::make(),
+                    TextEntry::make('metrology_instrument.name'),
+                    TextEntry::make('certificate.name'),
+                    TextEntry::make('normative_act.name'),
                 ])
         ]);
     }

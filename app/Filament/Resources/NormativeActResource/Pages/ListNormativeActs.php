@@ -13,7 +13,7 @@ class ListNormativeActs extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label("Normativ akt qo'shish"),
         ];
     }
 }

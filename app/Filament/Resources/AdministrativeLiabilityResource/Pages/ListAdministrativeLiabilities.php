@@ -13,7 +13,7 @@ class ListAdministrativeLiabilities extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label("Ma'muriy javobgarlik yaratish"),
         ];
     }
 }

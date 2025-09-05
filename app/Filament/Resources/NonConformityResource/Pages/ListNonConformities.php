@@ -13,7 +13,7 @@ class ListNonConformities extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label("Nomovufiqlik qo'shish"),
         ];
     }
 }

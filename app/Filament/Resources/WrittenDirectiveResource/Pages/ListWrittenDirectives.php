@@ -13,7 +13,7 @@ class ListWrittenDirectives extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label("Yozma ko'rsatma"),
         ];
     }
 }
