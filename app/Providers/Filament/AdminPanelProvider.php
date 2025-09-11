@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Resources\HududResource;
 use App\Filament\Resources\OgohlantirishResource;
 use App\Filament\Widgets\AdministrativeLiabilityPostsChart;
 use Filament\Http\Middleware\Authenticate;
@@ -29,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('Davlat nazorati tizimi')
             ->login()
             ->resources(
                 [
@@ -36,7 +36,7 @@ class AdminPanelProvider extends PanelProvider
                 ]
             )
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Blue,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
