@@ -59,7 +59,7 @@ class NonConformityResource extends Resource
                     ->label('Xizmatlar')
                     ->visible(fn (callable $get) => $get('choice') === 'service'),
 
-                Forms\Components\Select::make('normative_act_ids')
+                Forms\Components\Select::make('normative_act_id')
                     ->label('Normativ-huquqiy asos')
                     ->multiple()
                     ->preload()
@@ -75,7 +75,6 @@ class NonConformityResource extends Resource
                         $act = NormativeAct::create(['name' => $data['name']]);
                         return (string)$act->id; // Select shu id ni tanlovga qo‘shadi
                     })
-                    // JSONga toza massiv yozilishi uchun:
                     ->dehydrateStateUsing(fn($state) => array_map('intval', $state ?? []))
                     ->default([]),
                 Forms\Components\Textarea::make('normative_documents')
