@@ -15,6 +15,7 @@ use Filament\Tables\Table;
 
 class NonConformityResource extends Resource
 {
+    protected static ?int $navigationSort = 4;
     protected static ?string $model = NonConformity::class;
 
 //    public static function shouldRegisterNavigation(): bool
@@ -60,22 +61,11 @@ class NonConformityResource extends Resource
                     ->visible(fn (callable $get) => $get('choice') === 'service'),
 
                 Forms\Components\Select::make('normative_act_id')
-                    ->label('Normativ-huquqiy asos')
+                    ->label('Normativ-huquqiy asoslar')
                     ->multiple()
+                    ->options(NormativeAct::pluck('name', 'id')->toArray())
                     ->preload()
                     ->searchable()
-                    ->options(fn() => NormativeAct::orderBy('name')->pluck('name', 'id')->toArray())
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('name')
-                            ->label('Huquqiy hujjat nomi')
-                            ->required()
-                            ->maxLength(255),
-                    ])
-                    ->createOptionUsing(function (array $data) {
-                        $act = NormativeAct::create(['name' => $data['name']]);
-                        return (string)$act->id; // Select shu id ni tanlovga qo‘shadi
-                    })
-                    ->dehydrateStateUsing(fn($state) => array_map('intval', $state ?? []))
                     ->default([]),
                 Forms\Components\Textarea::make('normative_documents')
                     ->required()
@@ -105,11 +95,12 @@ class NonConformityResource extends Resource
                     ->searchable()
                     ->wrap()
                     ->label('Xizmatlar'),
-                Tables\Columns\TextColumn::make('normative_act.name')
-                    ->numeric()
-                    ->wrap()
-                    ->label('Natmativ huquqiy asos')
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('normative_act_id')
+                    ->label('Normativ huquqiy asoslar')
+                    ->formatStateUsing(function ($state) {
+                        if (!is_array($state)) return '';
+                        return NormativeAct::whereIn('id', $state)->pluck('name')->join(', ');
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

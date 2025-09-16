@@ -17,7 +17,7 @@ class GovControl extends Model
         return $this->belongsTo(Order::class, 'order_id');
     }
 
-    public function product() { return $this->hasMany(Product::class, 'gov_control_id'); }
+    public function products() { return $this->hasMany(Product::class, 'gov_control_id'); }
     public function certificate() { return $this->hasMany(Certificate::class, 'gov_control_id'); }
     public function metrology_instrument() { return $this->hasMany(MetrologyInstrument::class, 'gov_control_id'); }
     public function service() { return $this->hasMany(Services::class, 'gov_control_id'); }
@@ -26,7 +26,7 @@ class GovControl extends Model
     public function getDeficiencyItemsAttribute()
     {
         return collect([
-            $this->product->map(fn ($p) => [
+            $this->products->map(fn ($p) => [
                 'type' => 'Mahsulot',
                 'name' => $p->name,
             ]),

@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\DB;
 
 class CreateEconomicSanction extends CreateRecord
 {
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
     protected static string $resource = EconomicSanctionResource::class;
 
     public array $selectedNcIds = [];

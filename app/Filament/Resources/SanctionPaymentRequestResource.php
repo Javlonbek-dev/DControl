@@ -16,9 +16,10 @@ use Filament\Tables\Table;
 
 class SanctionPaymentRequestResource extends Resource
 {
+    protected static ?int $navigationSort = 6;
     protected static ?string $model = SanctionPaymentRequest::class;
     protected static ?string $pluralLabel = "Sanksiya To'lov Talabnomasi";
-    protected static ?string $navigationGroup = "Sanksiyaga oid malumotlar";
+//    protected static ?string $navigationGroup = "Sanksiyaga oid malumotlar";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 //    public static function shouldRegisterNavigation(): bool
 //    {

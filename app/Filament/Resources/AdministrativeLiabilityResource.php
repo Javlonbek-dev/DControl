@@ -22,6 +22,7 @@ use Illuminate\Validation\ValidationException;
 
 class AdministrativeLiabilityResource extends Resource
 {
+    protected static ?int $navigationSort = 5;
     protected static ?string $model = AdministrativeLiability::class;
     protected static ?string $pluralLabel = "Ma'muriy bayonnoma";
 

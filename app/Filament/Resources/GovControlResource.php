@@ -6,11 +6,10 @@ use App\Filament\Resources\GovControlResource\Pages;
 use App\Filament\Resources\GovControlResource\RelationManagers;
 use App\Models\GovControl;
 use Carbon\Carbon;
-use Filament\Facades\Filament;
 use Filament\Forms;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -18,6 +17,7 @@ use Filament\Tables\Table;
 
 class GovControlResource extends Resource
 {
+    protected static ?int $navigationSort =3;
     protected static ?string $model = GovControl::class;
     protected static ?string $pluralLabel= "Tekshiruv";
 
@@ -31,17 +31,39 @@ class GovControlResource extends Resource
                     ->required()
                     ->label('Buyruq raqami')
                     ->relationship('order', 'number'),
-                Forms\Components\TextInput::make('number')
+
+                Forms\Components\DatePicker::make('sign_date')
                     ->required()
-                    ->label('Tekshiruv raqami')
-                    ->numeric(),
-                Forms\Components\DatePicker::make('real_date_from')
-                    ->required()
-                    ->label('Tilxat olingan sana')
-//                Forms\Components\Toggle::make('is_finished')->default(false)
-//                    ->visible(fn () => auth()->user()?->hasRole('moderator'))
-//                    ->label('Tekshiruv tugatildimi')
-            ])->columns(1);
+                    ->label('Tilxat olingan sana'),
+
+                Repeater::make('products')
+                    ->label('Mahsulotlar')
+                    ->relationship('products') // hasMany(Product::class)
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Mahsulot nomi')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('amount')
+                            ->label('Qoldiq mahsulot soni')
+                            ->required(),
+                        TextInput::make('price')
+                            ->label('1 dona mahsulot narxi sumda')
+                            ->required(),
+                        Forms\Components\Hidden::make('created_by')
+                            ->default(fn() => auth()->id())
+                            ->dehydrated(true),
+                        Forms\Components\Hidden::make('updated_by')
+                            ->default(fn() => auth()->id())
+                            ->dehydrated(true),
+                    ])
+                    ->columns(1)
+                    ->addActionLabel('Mahsulot qo‘shish')
+                    ->defaultItems(0)      // boshlang‘ich elementlar soni
+                    ->reorderable(true)    // tartibni o‘zgartirish mumkin
+                    ->collapsed()          // UX uchun yig‘ilgan ko‘rinishda turadi
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
@@ -55,10 +77,7 @@ class GovControlResource extends Resource
                     ->numeric()
                     ->label('Buyruq raqami')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('number')
-                    ->label('Tekshiruv raqami')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('real_date_from')
+                Tables\Columns\TextColumn::make('sign_date')
                     ->date('d-m-Y')
                     ->label('Tilxat olingan sana')
                     ->sortable(),

@@ -11,7 +11,7 @@ class GovControlOverviewStats extends BaseWidget
     protected function getStats(): array
     {
         $total          = GovControl::count();
-        $withProduct    = GovControl::whereHas('product')->count();
+        $withProduct    = GovControl::whereHas('products')->count();
         $withInstrument = GovControl::whereHas('metrology_instrument')->count();
         $withCert       = GovControl::whereHas('certificate')->count();
 

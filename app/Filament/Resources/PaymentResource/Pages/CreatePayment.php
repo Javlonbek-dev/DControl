@@ -8,5 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreatePayment extends CreateRecord
 {
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
     protected static string $resource = PaymentResource::class;
 }

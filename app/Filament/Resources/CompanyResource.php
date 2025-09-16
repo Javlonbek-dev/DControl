@@ -19,9 +19,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CompanyResource extends Resource
 {
+    protected static ?int $navigationSort = 1;
     protected static ?string $model = Company::class;
     protected static ?string $pluralLabel = "Tashkilot";
-    protected static ?string $navigationGroup = 'Tashkilot Malumotlari';
+//    protected static ?string $navigationGroup = 'Tashkilot Malumotlari';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

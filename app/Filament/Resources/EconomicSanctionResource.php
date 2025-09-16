@@ -22,9 +22,10 @@ use Illuminate\Validation\ValidationException;
 
 class EconomicSanctionResource extends Resource
 {
+    protected static ?int $navigationSort = 7;
     protected static ?string $model = EconomicSanction::class;
     protected static ?string $pluralLabel = "Moliyaviy Jarima";
-    protected static ?string $navigationGroup = "Sanksiyaga oid malumotlar";
+//    protected static ?string $navigationGroup = "Sanksiyaga oid malumotlar";
 
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';

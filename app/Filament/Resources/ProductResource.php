@@ -16,10 +16,7 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
     protected static ?string $navigationGroup = "Kamchiliklar turlari";
     protected static ?string $pluralLabel = "Mahsulot";
-//    public static function shouldRegisterNavigation(): bool
-//    {
-//        return false;
-//    }
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -28,7 +25,6 @@ class ProductResource extends Resource
             ->schema([
                 Forms\Components\Select::make('gov_control_id')
                     ->required()
-                    ->searchable()
                     ->relationship('gov_control.order', 'number')
                     ->label('Buyruq raqami'),
                 Forms\Components\TextInput::make('name')

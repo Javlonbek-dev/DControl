@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\CompanyResource;
+use App\Filament\Resources\CompanyResource\Pages\CreateCompanyOrderFlow;
 use App\Filament\Resources\OgohlantirishResource;
 use App\Filament\Widgets\AdministrativeLiabilityPostsChart;
 use Filament\Http\Middleware\Authenticate;
@@ -32,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->resources(
                 [
-                    OgohlantirishResource::class,
+                    CompanyResource::class,
                 ]
             )
             ->colors([

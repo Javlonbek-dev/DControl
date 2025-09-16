@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ProfessionResource extends Resource
 {
     protected static ?string $model = Profession::class;
+    protected static ?string $navigationGroup = 'Tashkilot Malumotlari';
+
     protected static ?string $navigationLabel = "Lavozimlar";
 //    public static function shouldRegisterNavigation(): bool
 //    {

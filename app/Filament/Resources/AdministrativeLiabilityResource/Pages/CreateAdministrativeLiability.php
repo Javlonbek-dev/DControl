@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\DB;
 
 class CreateAdministrativeLiability extends CreateRecord
 {
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
     protected static string $resource = AdministrativeLiabilityResource::class;
 
     // Tanlangan NC ID larni vaqtincha saqlash uchun

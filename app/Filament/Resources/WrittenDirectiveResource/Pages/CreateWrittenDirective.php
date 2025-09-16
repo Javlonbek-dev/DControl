@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\DB;
 
 class CreateWrittenDirective extends CreateRecord
 {
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
     protected static string $resource = WrittenDirectiveResource::class;
 
     public array $selectedNcIds = [];

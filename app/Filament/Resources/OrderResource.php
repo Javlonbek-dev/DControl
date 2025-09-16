@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\CompanyResource\Pages\CreateCompanyOrderFlow;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers;
 use App\Models\Company;
@@ -15,6 +16,7 @@ use Filament\Tables\Table;
 
 class OrderResource extends Resource
 {
+    protected static ?int $navigationSort =2;
     protected static ?string $model = Order::class;
     protected static ?string $pluralLabel = "Buyruqlar";
 
@@ -28,7 +30,6 @@ class OrderResource extends Resource
                 Forms\Components\Select::make('company_id')
                     ->label('Tashkilot nomi')
                     ->relationship('company', 'name')
-                    ->searchable()
                     ->required()
                     ->reactive(),
 
@@ -66,16 +67,16 @@ class OrderResource extends Resource
                 Forms\Components\TextInput::make('ombudsman_code_number')
                     ->required()
                     ->label('Ombudsmandan olingan raqam'),
-                Forms\Components\TextInput::make('control_days')
-                    ->required()
-                    ->label('Tekshiruv o\'tkaziladigan kunlar')
-                    ->numeric(),
                 Forms\Components\DatePicker::make('data_from')
                     ->required()
                     ->label('Tekshiruv boshlanadigan sana'),
                 Forms\Components\DatePicker::make('data_to')
                     ->required()
                     ->label('Tekshiruv tugash sanasi'),
+                Forms\Components\TextInput::make('control_days')
+                    ->required()
+                    ->label('Tekshiruv o\'tkaziladigan kunlar')
+                    ->numeric(),
                 Forms\Components\DatePicker::make('period_from')
                     ->required()
                     ->label('Tekshiruv davrini boshlanishi'),

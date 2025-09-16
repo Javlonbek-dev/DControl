@@ -9,4 +9,8 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateAdministrativeCode extends CreateRecord
 {
     protected static string $resource = AdministrativeCodeResource::class;
+     protected function getRedirectUrl(): string
+     {
+         return $this->getResource()::getUrl('index');
+     }
 }

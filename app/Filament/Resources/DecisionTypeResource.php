@@ -10,13 +10,13 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DecisionTypeResource extends Resource
 {
     protected static ?string $model = DecisionType::class;
     protected static ?string $pluralLabel ="Qaror turi";
+    protected static ?string $navigationGroup = 'Tashkilot Malumotlari';
+
 //    public static function shouldRegisterNavigation(): bool
 //    {
 //        return false;
