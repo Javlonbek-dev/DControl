@@ -4,14 +4,18 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\NonConformityResource\Pages;
 use App\Filament\Resources\NonConformityResource\RelationManagers;
+use App\Models\Criteria;
 use App\Models\NonConformity;
 use App\Models\NormativeAct;
 use Filament\Forms;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class NonConformityResource extends Resource
 {
@@ -24,7 +28,14 @@ class NonConformityResource extends Resource
 //    }
     protected static ?string $pluralLabel = "Nomuvofiqliklar";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -59,6 +70,32 @@ class NonConformityResource extends Resource
                     ->relationship('service', 'name')
                     ->label('Xizmatlar')
                     ->visible(fn (callable $get) => $get('choice') === 'service'),
+                CheckboxList::make('criteria')
+                    ->label('Kriteriyalar')
+                    ->relationship('criteria', 'name')
+                    ->options(function (Get $get) {
+                        $type = $get('choice');
+                        return Criteria::query()
+                            ->forType($type)
+//                            ->where('active', true)
+                            ->orderBy('name')
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    })
+                    ->visible(fn (Get  $get) => filled($get('choice')))
+                    ->columns(2)
+                    ->reactive(),
+
+
+
+
+
+
+
+
+
+
+
 
                 Forms\Components\Select::make('normative_act_id')
                     ->label('Normativ-huquqiy asoslar')
@@ -70,7 +107,7 @@ class NonConformityResource extends Resource
                 Forms\Components\Textarea::make('normative_documents')
                     ->required()
                     ->label('Normativ hujjat')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()->disabled(),
             ])->columns(1);
     }
 

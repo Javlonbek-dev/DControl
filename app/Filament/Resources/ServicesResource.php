@@ -11,15 +11,25 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ServicesResource extends Resource
 {
     protected static ?string $model = Services::class;
+    protected static ?int $navigationSort =3;
     protected static ?string $pluralLabel = 'Xizmatlar';
-    protected static ?string $navigationGroup = "Kamchiliklar turlari";
+    protected static ?string $navigationGroup = "Tekshiruv malumotlari";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
     public static function form(Form $form): Form
     {
         return $form

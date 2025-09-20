@@ -17,6 +17,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
@@ -27,6 +28,14 @@ class EconomicSanctionResource extends Resource
     protected static ?string $pluralLabel = "Moliyaviy Jarima";
 //    protected static ?string $navigationGroup = "Sanksiyaga oid malumotlar";
 
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

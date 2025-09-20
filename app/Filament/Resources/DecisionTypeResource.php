@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class DecisionTypeResource extends Resource
 {
@@ -23,6 +24,21 @@ class DecisionTypeResource extends Resource
 //    }
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        if(auth()->user()?->hasRole('moderator')){
+            return true;
+        }
+        return false;
+    }
     public static function form(Form $form): Form
     {
         return $form

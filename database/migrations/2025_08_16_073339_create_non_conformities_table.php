@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreignId('sanction_payment_request_id')->nullable()->constrained('sanction_payment_requests');
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->text('normative_documents');
+            $table->text('normative_documents')->nullable();
             $table->timestamps();
         });
     }

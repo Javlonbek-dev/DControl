@@ -13,6 +13,7 @@ use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class WrittenDirectiveResource extends Resource
 {
@@ -22,6 +23,14 @@ class WrittenDirectiveResource extends Resource
 //    {
 //        return false;
 //    }
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
 
     protected static ?string $pluralLabel = "Yozma Ko'rsatma";
     protected static ?string $navigationGroup = "Qonuniy Asoslar";
@@ -34,6 +43,7 @@ class WrittenDirectiveResource extends Resource
             ->schema([
                 Forms\Components\Textarea::make('name')
                     ->required()
+                    ->label('Yozma ko\'rsatma matni')
                     ->columnSpanFull(),
                 Forms\Components\Select::make('order_id')
                     ->label('Buyruq raqami')

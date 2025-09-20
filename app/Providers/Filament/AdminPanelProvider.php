@@ -4,17 +4,16 @@ namespace App\Providers\Filament;
 
 use App\Filament\Resources\CompanyResource;
 use App\Filament\Resources\CompanyResource\Pages\CreateCompanyOrderFlow;
-use App\Filament\Resources\OgohlantirishResource;
 use App\Filament\Widgets\AdministrativeLiabilityPostsChart;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -59,6 +58,20 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->navigationGroups([
+                NavigationGroup::make()
+                    ->label('Tekshiruv malumotlari')
+                    ->collapsed(),
+
+                NavigationGroup::make()
+                    ->label('Tashkilot Malumotlari'),  // 2-o‘rin
+
+                NavigationGroup::make()
+                    ->label('Sanksiyaga oid malumotlar'), // 3-o‘rin
+
+                NavigationGroup::make()
+                    ->label('Qonuniy Asoslar'),         // 4-o‘rin
             ])
             ->authMiddleware([
                 Authenticate::class,

@@ -7,13 +7,12 @@ use App\Filament\Resources\GovControlResource\RelationManagers;
 use App\Models\GovControl;
 use Carbon\Carbon;
 use Filament\Forms;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class GovControlResource extends Resource
 {
@@ -23,6 +22,15 @@ class GovControlResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -36,32 +44,6 @@ class GovControlResource extends Resource
                     ->required()
                     ->label('Tilxat olingan sana'),
 
-                Repeater::make('products')
-                    ->label('Mahsulotlar')
-                    ->relationship('products') // hasMany(Product::class)
-                    ->schema([
-                        TextInput::make('name')
-                            ->label('Mahsulot nomi')
-                            ->required()
-                            ->maxLength(255),
-                        TextInput::make('amount')
-                            ->label('Qoldiq mahsulot soni')
-                            ->required(),
-                        TextInput::make('price')
-                            ->label('1 dona mahsulot narxi sumda')
-                            ->required(),
-                        Forms\Components\Hidden::make('created_by')
-                            ->default(fn() => auth()->id())
-                            ->dehydrated(true),
-                        Forms\Components\Hidden::make('updated_by')
-                            ->default(fn() => auth()->id())
-                            ->dehydrated(true),
-                    ])
-                    ->columns(1)
-                    ->addActionLabel('Mahsulot qo‘shish')
-                    ->defaultItems(0)      // boshlang‘ich elementlar soni
-                    ->reorderable(true)    // tartibni o‘zgartirish mumkin
-                    ->collapsed()          // UX uchun yig‘ilgan ko‘rinishda turadi
             ])
             ->columns(1);
     }
@@ -78,11 +60,11 @@ class GovControlResource extends Resource
                     ->label('Buyruq raqami')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sign_date')
-                    ->date('d-m-Y')
+                    ->date('d.m.Y')
                     ->label('Tilxat olingan sana')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('real_date_to')
-                    ->date('d-m-Y')
+                    ->date('d.m.Y')
                     ->label('Tekshiruvni tugatish sanasi')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('is_finished')

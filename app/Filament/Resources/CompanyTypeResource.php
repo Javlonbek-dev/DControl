@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CompanyTypeResource extends Resource
@@ -71,6 +72,21 @@ class CompanyTypeResource extends Resource
         return [
             //
         ];
+    }
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        if(auth()->user()?->hasRole('moderator')){
+            return true;
+        }
+        return false;
     }
 
     public static function getPages(): array

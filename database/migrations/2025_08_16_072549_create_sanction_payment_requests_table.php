@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sanction_payment_requests', function (Blueprint $table) {
             $table->id();
-            $table->integer('number');
+            $table->string('number');
             $table->date('registration_date');
             $table->float('assessed_fine');
             $table->boolean('is_paid');

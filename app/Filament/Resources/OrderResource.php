@@ -13,16 +13,23 @@ use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class OrderResource extends Resource
 {
     protected static ?int $navigationSort =2;
     protected static ?string $model = Order::class;
     protected static ?string $pluralLabel = "Buyruqlar";
-
-
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -136,19 +143,19 @@ class OrderResource extends Resource
                     ->sortable()
                     ->wrap(),
                 Tables\Columns\TextColumn::make('data_from')
-                    ->date('d-m-Y')
+                    ->date('d.m.Y')
                     ->label('Tekshiruv boshlanadigan sana')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('data_to')
-                    ->date('d-m-Y')
+                    ->date('d.m.Y')
                     ->label('Tekshiruv tugagan sana')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('period_from')
-                    ->date('d-m-Y')
+                    ->date('d.m.Y')
                     ->label('Tekshiruv davrini boshlanishi')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('period_to')
-                    ->date('d-m-Y')
+                    ->date('d.m.Y')
                     ->label('Tekshiruv davrini tugash sanasi')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('company_type.name')

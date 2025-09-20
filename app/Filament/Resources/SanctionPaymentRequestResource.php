@@ -13,6 +13,7 @@ use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class SanctionPaymentRequestResource extends Resource
 {
@@ -25,6 +26,14 @@ class SanctionPaymentRequestResource extends Resource
 //    {
 //        return false;
 //    }
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
     public static function form(Form $form): Form
     {
         return $form

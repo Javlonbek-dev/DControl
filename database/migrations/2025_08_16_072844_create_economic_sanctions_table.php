@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('economic_sanctions', function (Blueprint $table) {
             $table->id();
-            $table->integer('number');
+            $table->string('number');
             $table->date('registration_date');
             $table->double('assessed_fine');
             $table->text('court_name')->nullable();

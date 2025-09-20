@@ -10,12 +10,13 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class MetrologyInstrumentResource extends Resource
 {
     protected static ?string $model = MetrologyInstrument::class;
-    protected static ?string $navigationGroup = "Kamchiliklar turlari";
-    protected static ?string $pluralLabel = "Metralogiya";
+    protected static ?string $navigationGroup = "Tekshiruv malumotlari";
+    protected static ?string $pluralLabel = "O'lchov vositalari";
 
 //    public static function shouldRegisterNavigation(): bool
 //    {
@@ -23,6 +24,14 @@ class MetrologyInstrumentResource extends Resource
 //    }
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
     public static function form(Form $form): Form
     {
         return $form

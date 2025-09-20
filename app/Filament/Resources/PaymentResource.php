@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PaymentResource extends Resource
@@ -30,6 +31,21 @@ class PaymentResource extends Resource
         ]);
     }
 
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        if(auth()->user()?->hasRole('moderator')){
+            return true;
+        }
+        return false;
+    }
     protected static ?string $navigationGroup = "Sanksiyaga oid malumotlar";
 //    public static function shouldRegisterNavigation(): bool
 //    {

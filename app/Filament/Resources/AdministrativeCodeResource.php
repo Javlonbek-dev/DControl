@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AdministrativeCodeResource extends Resource
@@ -58,10 +59,12 @@ class AdministrativeCodeResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
+                    ->date('d.m.Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
+                    ->date('d.m.Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -84,7 +87,21 @@ class AdministrativeCodeResource extends Resource
             //
         ];
     }
-
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        if(auth()->user()?->hasRole('moderator')){
+            return true;
+        }
+        return false;
+    }
     public static function getPages(): array
     {
         return [

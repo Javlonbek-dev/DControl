@@ -11,17 +11,15 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CertificateResource extends Resource
 {
+    protected static ?int $navigationSort = 2;
     protected static ?string $model = Certificate::class;
-//    public static function shouldRegisterNavigation(): bool
-//    {
-//        return false;
-//    }
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = "Kamchiliklar turlari";
+    protected static ?string $navigationGroup = "Tekshiruv malumotlari";
     protected static ?string $pluralLabel= "Sertifikat";
 
     public static function form(Form $form): Form
@@ -34,9 +32,17 @@ class CertificateResource extends Resource
                     ->relationship('gov_control.order', 'number'),
                 Forms\Components\TextInput::make('name')
                     ->required()
-                    ->label('Sertifikat')
+                    ->label('Sertifikat reestr raqami')
                     ->maxLength(255),
             ]);
+    }
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
     }
 
     public static function table(Table $table): Table
@@ -49,7 +55,7 @@ class CertificateResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
-                    ->label('Sertifikat'),
+                    ->label('Sertifikat reestr raqami'),
                 Tables\Columns\TextColumn::make('createdBy.name')
                     ->label('Kim tomonidan yaratilgan')
                     ->searchable(),

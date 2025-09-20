@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Blameable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class NonConformity extends Model
 {
@@ -67,4 +68,15 @@ class NonConformity extends Model
     {
         return $this->belongsTo(Services::class, 'service_id');
     }
+
+    public function criteria()
+    {
+        return $this->belongsToMany(
+            \App\Models\Criteria::class,   // yoki Criterion::class
+            'nonconformity_criterion',     // pivot jadval nomi
+            'nonconformity_id',            // << to'g'ri: current model FK (underscoresiz)
+            'criteria_id'                 // related model FK
+        );
+    }
+
 }

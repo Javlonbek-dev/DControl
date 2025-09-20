@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\AdministrativeLiabilityResource\Pages;
 use App\Filament\Resources\AdministrativeLiabilityResource\RelationManagers;
 use App\Models\AdministrativeLiability;
+use App\Models\Bxm;
 use App\Models\NonConformity;
 use App\Models\Order;
 use App\Models\Payment;
@@ -17,6 +18,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
@@ -34,7 +36,7 @@ class AdministrativeLiabilityResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('number')
                     ->required()
-                    ->label("Ma'muriy bayonnoma nomeri"),
+                    ->label("Ma'muriy bayonnoma raqami"),
 
                 Forms\Components\DatePicker::make('registration_date')
                     ->required()
@@ -125,12 +127,11 @@ class AdministrativeLiabilityResource extends Resource
                 Forms\Components\Toggle::make('is_paid')
                     ->visible(Filament::auth()->user()->hasRole(['moderator']))
                     ->label('To\'langanmi'),
-                Forms\Components\Select::make('bxm_id')
-                    ->required()
-                    ->relationship('bxm', 'quantity')
-                    ->disabled(fn($get) => $get('bxm.is_active' == true))
-                    ->label('Bxm qiymati'),
-                Forms\Components\TextInput::make('person_full_name')
+                Forms\Components\TextInput::make('bxm_id')
+                    ->label('Bxm qiymati')
+                    ->default(fn () => Bxm::where('is_active', true)->orderByDesc('id')->value('quantity'))
+                    ->disabled(),
+        Forms\Components\TextInput::make('person_full_name')
                     ->required()
                     ->label('Ma\'muriy qo\'llangan shaxsni to\'liq F.I.SH')
                     ->maxLength(255),
@@ -141,18 +142,18 @@ class AdministrativeLiabilityResource extends Resource
                 Forms\Components\Select::make('profession_id')
                     ->required()
                     ->searchable()
-                    ->label('Kasbi')
+                    ->label('Lavozimi')
                     ->relationship('profession', 'name')
                     ->createOptionForm([
                         Forms\Components\TextInput::make('name')
                             ->required()
-                            ->label('Kasb nomi'),
+                            ->label('Lavozim nomi'),
                         Forms\Components\Toggle::make('is_director')
                             ->required()
                             ->label('Derektormi'),
                         Forms\Components\Toggle::make('is_official')
                             ->required()
-                            ->label('Rasmiymi')
+                            ->label('Yuridik shaxsmi')
                     ]),
             ])->columns(1);
     }
@@ -164,78 +165,78 @@ class AdministrativeLiabilityResource extends Resource
                 Tables\Columns\TextColumn::make('order.company.name')
                     ->label('Tashkilot nomi'),
                 Tables\Columns\TextColumn::make('registration_date')
-                    ->date('d-m-Y')
+                    ->date('d.m.Y')
                     ->label('Registratsiya qilingan sana')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('court_date')
-                    ->date('d-m-Y')
+                    ->date('d.m.Y')
                     ->label('Sudga kiritilgan sanasi'),
-                Tables\Columns\TextColumn::make('deadline_status')
-                    ->label('Sudga topshirish muddati')
-                    ->badge()
-                    ->state(function ($record) {
-                        if (!$record->registration_date && !$record->court_date) {
-                            return "Ma'lumot yo‘q";
-                        }
-
-                        $deadline = $record->court_date
-                            ? Carbon::parse($record->court_date)
-                            : Carbon::parse($record->registration_date)->copy()->addDays(3);
-
-                        $today = Carbon::today();
-
-                        if ($today->gt($deadline)) {
-                            $over = $deadline->diffInDays($today);
-                            return "{$over} kun kechikgan";
-                        }
-
-                        $daysLeft = $today->diffInDays($deadline, false); // 0 => bugun oxirgi kun
-                        if ($daysLeft >= 2) {
-                            return "{$daysLeft} kun qoldi"; // 2 yoki undan ko'p
-                        }
-                        if ($daysLeft === 1) {
-                            return "1 kun qoldi";
-                        }
-                        return "Bugun oxirgi kun";
-                    })
-                    ->color(function ($record) {
-                        if (!$record->registration_date && !$record->court_date) {
-                            return 'gray';
-                        }
-
-                        $deadline = $record->court_date
-                            ? Carbon::parse($record->court_date)
-                            : Carbon::parse($record->registration_date)->copy()->addDays(3);
-
-                        $today = Carbon::today();
-
-                        if ($today->gt($deadline)) {
-                            return 'danger'; // qizil
-                        }
-
-                        $daysLeft = $today->diffInDays($deadline, false);
-                        if ($daysLeft >= 2) {
-                            return 'success'; // yashil
-                        }
-                        return 'warning'; // 1 kun yoki bugun — sariq
-                    })
-                    ->tooltip(function ($record) {
-                        if (!$record->registration_date && !$record->court_date) {
-                            return null;
-                        }
-
-                        $reg = $record->registration_date
-                            ? Carbon::parse($record->registration_date)->format('d-m-Y')
-                            : '—';
-
-                        $deadline = $record->court_date
-                            ? Carbon::parse($record->court_date)->format('d-m-Y') // court_date — oxirgi muddat
-                            : Carbon::parse($record->registration_date)->addDays(3)->format('d-m-Y');
-
-                        $today = Carbon::today()->format('d-m-Y');
-
-                        return "Registratsiya: {$reg}\nOxirgi muddat (court_date): {$deadline}\nBugun: {$today}";
-                    }),
+//                Tables\Columns\TextColumn::make('deadline_status')
+//                    ->label('Sudga topshirish muddati')
+//                    ->badge()
+//                    ->state(function ($record) {
+//                        if (!$record->registration_date && !$record->court_date) {
+//                            return "Ma'lumot yo‘q";
+//                        }
+//
+//                        $deadline = $record->court_date
+//                            ? Carbon::parse($record->court_date)
+//                            : Carbon::parse($record->registration_date)->copy()->addDays(3);
+//
+//                        $today = Carbon::today();
+//
+//                        if ($today->gt($deadline)) {
+//                            $over = $deadline->diffInDays($today);
+//                            return "{$over} kun kechikgan";
+//                        }
+//
+//                        $daysLeft = $today->diffInDays($deadline, false); // 0 => bugun oxirgi kun
+//                        if ($daysLeft >= 2) {
+//                            return "{$daysLeft} kun qoldi"; // 2 yoki undan ko'p
+//                        }
+//                        if ($daysLeft === 1) {
+//                            return "1 kun qoldi";
+//                        }
+//                        return "Bugun oxirgi kun";
+//                    })
+//                    ->color(function ($record) {
+//                        if (!$record->registration_date && !$record->court_date) {
+//                            return 'gray';
+//                        }
+//
+//                        $deadline = $record->court_date
+//                            ? Carbon::parse($record->court_date)
+//                            : Carbon::parse($record->registration_date)->copy()->addDays(3);
+//
+//                        $today = Carbon::today();
+//
+//                        if ($today->gt($deadline)) {
+//                            return 'danger'; // qizil
+//                        }
+//
+//                        $daysLeft = $today->diffInDays($deadline, false);
+//                        if ($daysLeft >= 2) {
+//                            return 'success'; // yashil
+//                        }
+//                        return 'warning'; // 1 kun yoki bugun — sariq
+//                    })
+//                    ->tooltip(function ($record) {
+//                        if (!$record->registration_date && !$record->court_date) {
+//                            return null;
+//                        }
+//
+//                        $reg = $record->registration_date
+//                            ? Carbon::parse($record->registration_date)->format('d-m-Y')
+//                            : '—';
+//
+//                        $deadline = $record->court_date
+//                            ? Carbon::parse($record->court_date)->format('d-m-Y') // court_date — oxirgi muddat
+//                            : Carbon::parse($record->registration_date)->addDays(3)->format('d-m-Y');
+//
+//                        $today = Carbon::today()->format('d-m-Y');
+//
+//                        return "Registratsiya: {$reg}\nOxirgi muddat (court_date): {$deadline}\nBugun: {$today}";
+//                    }),
                 Tables\Columns\TextColumn::make('decision_type_id')
                     ->label('Sud qarorining turi')
                     ->badge()
@@ -247,7 +248,7 @@ class AdministrativeLiabilityResource extends Resource
                     ->sortable()
                     ->badge()
                     ->state(fn ($record) => $record->decision_date
-                        ? Carbon::parse($record->decision_date)->format('d-m-Y')
+                        ? Carbon::parse($record->decision_date)->format('d.m.Y')
                         : 'Sud qarori chiqarmagan'
                     )
                     ->color(fn ($record) => $record->decision_date ? 'success' : 'danger'),
@@ -435,7 +436,14 @@ class AdministrativeLiabilityResource extends Resource
             //
         ];
     }
-
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
     public static function getPages(): array
     {
         return [

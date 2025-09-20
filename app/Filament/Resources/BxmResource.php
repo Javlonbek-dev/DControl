@@ -20,7 +20,13 @@ class BxmResource extends Resource
     protected static ?string $pluralLabel = "BXM";
     protected static ?string $navigationGroup = "Sanksiyaga oid malumotlar";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    public static function shouldRegisterNavigation(): bool
+    {
+        if(auth()->user()?->hasRole('moderator')){
+            return true;
+        }
+        return false;
+    }
     public static function form(Form $form): Form
     {
         return $form

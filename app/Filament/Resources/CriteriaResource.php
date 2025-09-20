@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\RegionResource\Pages;
-use App\Filament\Resources\RegionResource\RelationManagers;
-use App\Models\Region;
+use App\CriterionType;
+use App\Filament\Resources\CriteriaResource\Pages;
+use App\Filament\Resources\CriteriaResource\RelationManagers;
+use App\Models\Criteria;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,28 +15,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class RegionResource extends Resource
+class CriteriaResource extends Resource
 {
-    protected static ?string $model = Region::class;
-    protected static ?string $pluralLabel = "Hududlar";
-    protected static ?string $navigationGroup = 'Tashkilot Malumotlari';
-    public static function canEdit(Model $record): bool
-    {
-        return auth()->user()?->hasRole('moderator');
-    }
-    public static function canDelete(Model $record): bool
-    {
-        return auth()->user()?->hasRole('moderator');
-    }
+    protected static ?string $model = Criteria::class;
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        if(auth()->user()?->hasRole('moderator')){
-            return true;
-        }
-        return false;
-    }
-
+    protected static ?string $navigationGroup = "Tekshiruv malumotlari";
+    protected static ?string $pluralLabel = 'Mezonlar';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -45,6 +30,15 @@ class RegionResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Select::make('type')
+                    ->label('Turi')
+                    ->required()
+                    ->options([
+                        'product'    => 'Mahsulot',
+                        'metrology'  => 'Metrologiya',
+                        'certificate'=> 'Sertifikat',
+                        'service'    => 'Xizmat',
+                    ])
             ]);
     }
 
@@ -54,12 +48,8 @@ class RegionResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-//                Tables\Columns\TextColumn::make('createdBy.name')
-//                    ->label('Kim tomonidan yaratilgan')
-//                    ->searchable(),
-//                Tables\Columns\TextColumn::make('updatedBy.name')
-//                    ->label('Kim tomonidan o\'zgartirilgan')
-//                    ->searchable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -89,12 +79,27 @@ class RegionResource extends Resource
         ];
     }
 
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        if(auth()->user()?->hasRole('moderator')){
+            return true;
+        }
+        return false;
+    }
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRegions::route('/'),
-            'create' => Pages\CreateRegion::route('/create'),
-            'edit' => Pages\EditRegion::route('/{record}/edit'),
+            'index' => Pages\ListCriterias::route('/'),
+            'create' => Pages\CreateCriteria::route('/create'),
+            'edit' => Pages\EditCriteria::route('/{record}/edit'),
         ];
     }
 }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('administrative_liabilities', function (Blueprint $table) {
             $table->id();
-            $table->integer('number');
+            $table->string('number');
             $table->date('registration_date');
             $table->foreignId('decision_type_id')->nullable()->constrained('decision_types');
             $table->date('decision_date')->nullable();

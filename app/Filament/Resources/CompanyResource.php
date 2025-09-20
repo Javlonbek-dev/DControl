@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CompanyResource extends Resource
@@ -65,7 +66,7 @@ class CompanyResource extends Resource
                     ->rule('exists:districts,id'),
                 Forms\Components\Toggle::make('is_business')
                     ->required()
-                    ->label('Tadbirkorlik subyectimi(Beznis ombudsman vakolatidagi tadbirkorlik subyecti)'),
+                    ->label('Tashkilot turi: Tadbirkorlik subektimi'),
 
             ]);
     }
@@ -78,8 +79,16 @@ class CompanyResource extends Resource
                     ->searchable()
                     ->label('Tashkilot nomi'),
                 Tables\Columns\TextColumn::make('stir')
+                    ->label('Tashkilot STIRi')
                     ->searchable()
-                    ->label('Tashkilot stiri'),
+                    ->formatStateUsing(function ($state) {
+                        if ($state && strlen($state) === 9) {
+                            return substr($state, 0, 3) . ' ' .
+                                substr($state, 3, 3) . ' ' .
+                                substr($state, 6, 3);
+                        }
+                        return $state;
+                    }),
                 Tables\Columns\TextColumn::make('district.name')
                     ->label('Tashkilot joylashgan hududi')
                     ->state(function ($record) {
@@ -90,7 +99,7 @@ class CompanyResource extends Resource
                 Tables\Columns\TextColumn::make('is_business')
                     ->searchable()
                     ->formatStateUsing(fn ($state) => $state ? 'DN' : 'DT')
-                    ->label('Tadbirkorlik subyektimi'),
+                    ->label('Tadbirkorlik subyekt shakli'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -111,6 +120,15 @@ class CompanyResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->hasRole('moderator');
     }
 
     public static function getRelations(): array
