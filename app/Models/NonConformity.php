@@ -32,16 +32,21 @@ class NonConformity extends Model
     {
         return $this->belongsTo(NormativeAct::class, 'normative_act_id');
     }
-    public function getNormativeActNamesAttribute(): array
+    public function getNormativeActsNamesAttribute()
     {
-        $ids = $this->normative_act_ids ?? [];
-        if (empty($ids)) return [];
-        return \App\Models\NormativeAct::whereIn('id', $ids)->pluck('name')->all();
+        if (!$this->normative_act_id) {
+            return null;
+        }
+
+        $ids = is_array($this->normative_act_id) ? $this->normative_act_id : json_decode($this->normative_act_id, true);
+
+        return NormativeAct::whereIn('id', $ids)->pluck('name')->join(', ');
     }
+
 
     public function scopeHasNormativeAct($q, int $actId)
     {
-        return $q->whereJsonContains('normative_act_ids', $actId);
+        return $q->whereJsonContains('normative_act_id', $actId);
     }
 
     public function written_directive()

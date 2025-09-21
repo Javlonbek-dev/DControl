@@ -55,7 +55,7 @@ class AdministrativeLiability extends Model
 
     public function payments()
     {
-        return $this->hasMany(Payment::class);
+        return $this->hasMany(Payment::class, 'administrative_liability_id', 'id');
     }
 
     public function getPaidTotalAttribute(): float

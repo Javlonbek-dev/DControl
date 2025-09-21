@@ -77,7 +77,6 @@ class NonConformityResource extends Resource
                         $type = $get('choice');
                         return Criteria::query()
                             ->forType($type)
-//                            ->where('active', true)
                             ->orderBy('name')
                             ->pluck('name', 'id')
                             ->toArray();
@@ -85,18 +84,6 @@ class NonConformityResource extends Resource
                     ->visible(fn (Get  $get) => filled($get('choice')))
                     ->columns(2)
                     ->reactive(),
-
-
-
-
-
-
-
-
-
-
-
-
                 Forms\Components\Select::make('normative_act_id')
                     ->label('Normativ-huquqiy asoslar')
                     ->multiple()
@@ -107,7 +94,7 @@ class NonConformityResource extends Resource
                 Forms\Components\Textarea::make('normative_documents')
                     ->required()
                     ->label('Normativ hujjat')
-                    ->columnSpanFull()->disabled(),
+                    ->columnSpanFull(),
             ])->columns(1);
     }
 
@@ -115,6 +102,18 @@ class NonConformityResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('company_name')
+                    ->label('Tashkilot')
+                    ->state(function ($record) {
+                        return $record->product?->gov_control?->order?->company?->name
+                            ?? $record->certificate?->gov_control?->order?->company?->name
+                            ?? $record->metrology_instrument?->gov_control?->order?->company?->name
+                            ?? $record->service?->gov_control?->order?->company?->name
+                            ?? '—';
+                    })
+                    ->searchable()
+                    ->sortable()
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('product.name')
                     ->numeric()
                     ->label('Mahsulot nomi')
@@ -132,12 +131,38 @@ class NonConformityResource extends Resource
                     ->searchable()
                     ->wrap()
                     ->label('Xizmatlar'),
-                Tables\Columns\TextColumn::make('normative_act_id')
+                TextColumn::make('normative_acts_names')
                     ->label('Normativ huquqiy asoslar')
-                    ->formatStateUsing(function ($state) {
-                        if (!is_array($state)) return '';
-                        return NormativeAct::whereIn('id', $state)->pluck('name')->join(', ');
-                    }),
+                    ->wrap(),
+                TextColumn::make('criterias_grouped')
+                    ->label('Mezonlar (guruhlab)')
+                    ->state(function ($record) {
+                        $byType = $record->criteria->groupBy('type'); // ['product'=>..., 'metrology'=>..., ...]
+
+                        $parts = [];
+                        foreach (['product', 'metrology', 'certificate', 'service'] as $type) {
+                            if (!empty($byType[$type])) {
+
+                                $names = $byType[$type]->pluck('name')->join(', ');
+                                if($type == 'product'){
+                                    $type = "Mahsulot";
+                                }
+                                if($type == 'metrology'){
+                                    $type = "O'lchov vositalari";
+                                }
+                                if($type == 'certificate'){
+                                    $type = "Sertifikat";
+                                }
+                                if($type == 'service'){
+                                    $type = "Xizmatlar";
+                                }
+                                $parts[] = ucfirst($type) . ': ' . $names;
+                            }
+                        }
+
+                        return $parts ? implode(" | ", $parts) : '—';
+                    })
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

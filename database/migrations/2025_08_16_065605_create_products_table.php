@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('gov_control_id')->nullable()->constrained('gov_controls');
             $table->string('name');
             $table->string('amount');
-            $table->string('price');
+            $table->string('price')->nullable();
+            $table->string('type')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

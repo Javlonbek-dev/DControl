@@ -76,6 +76,7 @@ class OrderResource extends Resource
                     ->label('Ombudsmandan olingan raqam'),
                 Forms\Components\DatePicker::make('data_from')
                     ->required()
+                    ->displayFormat('d.m.Y')
                     ->label('Tekshiruv boshlanadigan sana'),
                 Forms\Components\DatePicker::make('data_to')
                     ->required()

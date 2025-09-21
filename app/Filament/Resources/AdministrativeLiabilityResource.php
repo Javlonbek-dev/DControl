@@ -18,6 +18,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -59,7 +60,7 @@ class AdministrativeLiabilityResource extends Resource
                     ->label('Sudni qaror sanasi')
                     ->visible(Filament::auth()->user()->hasRole(['moderator'])),
                 Forms\Components\MultiSelect::make('selected_nc_ids')
-                    ->label('Non-conformities')
+                    ->label('Tekshiriv obektlari')
                     ->options(function (Get $get) {
                         $orderId = $get('order_id');
                         if (!$orderId) return [];
@@ -320,6 +321,7 @@ class AdministrativeLiabilityResource extends Resource
 
                         Forms\Components\TextInput::make('imposed_fine')
                             ->label('Jarima miqdori')
+                            ->confirmed(412000)
                             ->numeric()
                             ->required(),
 
