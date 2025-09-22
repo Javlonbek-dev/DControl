@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('nonconformity_criterion', function (Blueprint $table) {
-            $table->id();
             $table->unsignedBigInteger('nonconformity_id');
             $table->unsignedBigInteger('criteria_id');
             $table->primary(['nonconformity_id', 'criteria_id']);
