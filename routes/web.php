@@ -9,7 +9,7 @@ Route::get('/', function () {
 });
 Route::get('/edit/{file}', function ($file) {
     $documentServerUrl = 'http://192.168.151.93:8080';
-    $jwtSecret = 'f67a137951bc360ad89f6dd6a41e2dcacc99b70e62020e44841c1dc6d9da2374';
+    $jwtSecret = 'my_secret_123';
 
     // Fayl URL (agar public/docs ichida bo‘lsa)
     $fileUrl = url("/docs/$file");
