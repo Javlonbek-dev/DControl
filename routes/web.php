@@ -44,12 +44,11 @@ Route::get('/edit/{file}', function ($file) {
 Route::post('/onlyoffice/callback/{file}', function (Request $request, $file) {
     $data = $request->all();
 
-    if ($data['status'] == 2) { // 2 = fayl saqlanmoqda
-        $url = $data['url'];
-        $path = storage_path("app/docs/$file");
-
-        file_put_contents($path, file_get_contents($url));
+    if (isset($data['status']) && in_array($data['status'], [2, 6]) && !empty($data['url'])) {
+        $savePath = storage_path("app/public/docs/$file");
+        file_put_contents($savePath, file_get_contents($data['url']));
     }
 
     return response()->json(['error' => 0]);
 });
+
