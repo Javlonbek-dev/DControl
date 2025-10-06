@@ -94,7 +94,10 @@ class GovControlResource extends Resource
                     ->label('Tugatildi')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn ($record) => ! $record->is_finished) // faqat tugallanmaganlarda
+                    ->visible(fn ($record) =>
+                        ! $record->is_finished &&
+                        $record->created_by === auth()->id() // faqat o‘zi yaratgan
+                    )
                     ->requiresConfirmation()
                     ->form([
                         Forms\Components\DatePicker::make('finished_at')
@@ -107,9 +110,12 @@ class GovControlResource extends Resource
                             ? Carbon::parse($data['finished_at'])->toDateString()
                             : now()->toDateString();
 
+                        // Backend guard — URL orqali chaqirilsa ham to‘xtatadi
+                        abort_unless($record->created_by === auth()->id(), 403);
+
                         $record->update([
                             'is_finished'   => true,
-                            'real_date_to'  => $date,   // tugatish sanasini real_date_to ga yozamiz
+                            'real_date_to'  => $date,
                             'updated_by'    => auth()->id(),
                         ]);
 
@@ -124,18 +130,12 @@ class GovControlResource extends Resource
                     ->label('Qayta ochish')
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
-
-                    // 1) Faqat tugallangan yozuvda va moderatorga ko‘rinadi:
                     ->visible(fn ($record) =>
                         $record->is_finished && auth()->user()?->hasRole('moderator')
                     )
-
-                    // (ixtiyoriy, Filament v3 da bor) — ruxsatni action darajasida ham tekshiradi:
                     ->authorize(fn () => auth()->user()?->hasRole('moderator'))
-
                     ->requiresConfirmation()
                     ->action(function ($record) {
-                        // 2) Backend guard — to‘g‘ridan-to‘g‘ri URL/JS’dan chaqirilsa ham to‘xtatadi:
                         abort_unless(auth()->user()?->hasRole('moderator'), 403);
 
                         $record->update([

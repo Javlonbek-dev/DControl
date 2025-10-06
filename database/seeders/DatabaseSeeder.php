@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
                 CompanyTypeSeeder::class,
                 DistrictSeeder::class,
                 DecisionTypeSeeder::class,
+                NormativeActSeeder::class,
+                CriteriaSeeder::class,
             ]
         );
     }

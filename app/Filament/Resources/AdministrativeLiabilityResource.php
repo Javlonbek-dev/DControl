@@ -18,7 +18,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -154,7 +153,7 @@ class AdministrativeLiabilityResource extends Resource
                             ->label('Derektormi'),
                         Forms\Components\Toggle::make('is_official')
                             ->required()
-                            ->label('Yuridik shaxsmi')
+                            ->label('Mansabdormi')
                     ]),
             ])->columns(1);
     }
@@ -306,7 +305,16 @@ class AdministrativeLiabilityResource extends Resource
                 Tables\Actions\Action::make('enterCourtDecision')
                     ->label('Sud qarorlarini kiritish')
                     ->icon('heroicon-m-scale')
-                    ->visible(fn($record) => blank($record->decision_type_id) || blank($record->decision_date))
+                    ->visible(fn($record) => !$record->is_finished &&
+                        (
+                            $record->created_by === auth()->id()
+                            ||
+                            auth()->user()?->hasRole('moderator')
+                        ) &&
+                        (
+                            blank($record->decision_type_id) || blank($record->decision_date)
+                        )
+                    )
                     ->form([
                         Forms\Components\Select::make('decision_type_id')
                             ->label('Qaror turi')
@@ -334,6 +342,11 @@ class AdministrativeLiabilityResource extends Resource
                     ->modalSubmitActionLabel('Saqlash')
                     ->modalWidth('lg')
                     ->action(function ($record, array $data) {
+                        abort_unless(
+                            $record->created_by === auth()->id() || auth()->user()?->hasRole('moderator'),
+                            403
+                        );
+
                         $record->update($data);
 
                         \Filament\Notifications\Notification::make()
@@ -349,8 +362,15 @@ class AdministrativeLiabilityResource extends Resource
                     ->modalHeading('Undirilgan summani kiritish')
                     ->modalSubmitActionLabel('Saqlash')
                     ->modalWidth('lg')
-                    ->visible(fn($record) => $record?->imposed_fine > 0 && $record->remaining > 0)
-                    ->form([
+                    ->visible(fn($record) => (
+                            $record?->imposed_fine > 0 &&
+                            $record->remaining > 0
+                        ) && (
+                            // faqat egasi yoki moderator
+                            $record->created_by === auth()->id() ||
+                            auth()->user()?->hasRole('moderator')
+                        )
+                    )->form([
                         Forms\Components\TextInput::make('imposed_fine_view')
                             ->label('Sud belgilagan jarima (so‘m)')
                             ->default(fn($record) => (int)$record->imposed_fine)
@@ -382,6 +402,10 @@ class AdministrativeLiabilityResource extends Resource
                     ])
                     ->action(function ($record, array $data) {
                         // imposed_fine-ni faqat rekorddan olamiz — formdan emas
+                        abort_unless(
+                            $record->created_by === auth()->id() || auth()->user()?->hasRole('moderator'),
+                            403
+                        );
                         $imposed = (float)$record->imposed_fine;
                         $paidTotalBefore = (float)$record->payments()->sum('payment_amount');
 
@@ -438,6 +462,11 @@ class AdministrativeLiabilityResource extends Resource
             //
         ];
     }
+    public static function canDeleteAny(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole('moderator');
+    }
+
     public static function canEdit(Model $record): bool
     {
         return auth()->user()?->hasRole('moderator');
