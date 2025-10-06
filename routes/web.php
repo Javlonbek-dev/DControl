@@ -8,15 +8,19 @@ Route::get('/', function () {
     return redirect('/admin');
 });
 Route::get('/edit/{file}', function ($file) {
-    $documentServerUrl = 'http://192.168.151.93:8080'; // OnlyOffice DS manzili
-    $jwtSecret = 'f67a137951bc360ad89f6dd6a41e2dcacc99b70e62020e44841c1dc6d9da2374'; // siz konteynerda belgilagan JWT kalit
+    $documentServerUrl = 'http://192.168.151.93:8080';
+    $jwtSecret = 'f67a137951bc360ad89f6dd6a41e2dcacc99b70e62020e44841c1dc6d9da2374';
 
-    $fileUrl = url("/storage/docs/$file"); // Laravel public fayl manzili
+    // Fayl URL (agar public/docs ichida bo‘lsa)
+    $fileUrl = url("/docs/$file");
     $fileType = pathinfo($file, PATHINFO_EXTENSION);
     $fileName = basename($file);
 
-    // Editor config
+    // 🧠 Faqat shu qator qo‘shilmay qolgan:
+    $documentType = 'word'; // docx uchun, excel uchun 'cell', ppt uchun 'slide'
+
     $config = [
+        "documentType" => $documentType, // <— majburiy!
         "document" => [
             "fileType" => $fileType,
             "key" => md5($file . time()),
@@ -28,15 +32,14 @@ Route::get('/edit/{file}', function ($file) {
             ]
         ],
         "editorConfig" => [
-            "callbackUrl" => url("/onlyoffice/callback/$file"), // tahrirni saqlash uchun
+            "callbackUrl" => url("/onlyoffice/callback/$file"),
             "lang" => "en",
         ]
     ];
 
-    $configJson = json_encode($config, JSON_UNESCAPED_SLASHES);
-    $token = JWT::encode(json_decode($configJson, true), $jwtSecret, 'HS256');
+    $token = JWT::encode($config, $jwtSecret, 'HS256');
 
-    return view('onlyoffice-editor', compact('documentServerUrl', 'configJson', 'token'));
+    return view('onlyoffice-editor', compact('documentServerUrl', 'config', 'token'));
 });
 Route::post('/onlyoffice/callback/{file}', function (Request $request, $file) {
     $data = $request->all();
