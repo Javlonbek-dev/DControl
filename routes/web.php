@@ -29,19 +29,10 @@ Route::get('/edit/{file}', function ($file) {
         "editorConfig" => [
             "lang"        => "en",
             // Web route bilan mos!
-            "callbackUrl" => secure_url("onlyoffice/callback/$fileName"),
+            "callbackUrl" => secure_url("api/onlyoffice/callback/$fileName"),
         ],
     ];
     $config['token'] = JWT::encode($config, $jwtSecret, 'HS256');
 
     return view('onlyoffice-editor', compact('documentServerUrl', 'config'));
 });
-
-Route::post('/onlyoffice/callback/{file}', function (Request $request, $file) {
-    $data = $request->all();
-    if (isset($data['status']) && in_array($data['status'], [2,6]) && !empty($data['url'])) {
-        $savePath = storage_path('app/public/docs/'.basename($file));
-        file_put_contents($savePath, file_get_contents($data['url']));
-    }
-    return response()->json(['error' => 0]);
-})->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]); // FQN bilan
