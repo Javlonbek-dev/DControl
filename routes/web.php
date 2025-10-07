@@ -10,8 +10,10 @@ Route::get('/', function () {
     return redirect('/admin');
 });
 Route::get('/edit/{file}', function ($file) {
-    $documentServerUrl = 'http://192.168.151.93:8080';
-    $jwtSecret = 'my_secret_123';
+//    $documentServerUrl = 'http://192.168.151.93:8080';
+//    $jwtSecret = 'my_secret_123';
+    $documentServerUrl = 'http://217.114.2.216:8080';
+    $jwtSecret = 'MY_SUPER_SECRET';
 
     // Fayl URL (agar public/docs ichida bo‘lsa)
     $fileUrl = url("/docs/$file");
