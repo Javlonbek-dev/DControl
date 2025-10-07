@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+  <object-set>
+    <table path="control.public.gov_controls">
+      <table path="control.public.administrative_liabilities" name="administrative_id" from="" to=""/>
+    </table>
+  </object-set>
+</data>
