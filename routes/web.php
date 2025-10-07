@@ -10,47 +10,38 @@ Route::get('/', function () {
     return redirect('/admin');
 });
 Route::get('/edit/{file}', function ($file) {
-//    $documentServerUrl = 'http://192.168.151.93:8080';
-//    $jwtSecret = 'my_secret_123';
-    $documentServerUrl = 'http://217.114.2.216:8080';
-    $jwtSecret = 'sercet_key';
+    $documentServerUrl = 'https://dnazorat.uz/oo';
+    $jwtSecret = 'MY_SUPER_SECRET';
 
-    // Fayl URL (agar public/docs ichida bo‘lsa)
-    $fileUrl = url("/docs/$file");
-    $fileType = pathinfo($file, PATHINFO_EXTENSION);
-    $fileName = basename($file);
-
-    // 🧠 Faqat shu qator qo‘shilmay qolgan:
-    $documentType = 'word'; // docx uchun, excel uchun 'cell', ppt uchun 'slide'
+    $fileName  = basename($file);
+    $fileType  = pathinfo($fileName, PATHINFO_EXTENSION) ?: 'docx';
+    $fileUrl   = secure_url("storage/docs/$fileName");
 
     $config = [
-        "documentType" => $documentType, // <— majburiy!
+        "documentType" => "word",
         "document" => [
-            "fileType" => $fileType,
-            "key" => md5($file . time()),
-            "title" => $fileName,
-            "url" => $fileUrl,
-            "permissions" => [
-                "edit" => true,
-                "download" => true,
-            ]
+            "fileType"    => $fileType,
+            "key"         => md5($fileName.'-'.time()),
+            "title"       => $fileName,
+            "url"         => $fileUrl,
+            "permissions" => ["edit" => true, "download" => true],
         ],
         "editorConfig" => [
-            "callbackUrl" => url("/onlyoffice/callback/$file"),
-            "lang" => "en",
-        ]
+            "lang"        => "en",
+            // Web route bilan mos!
+            "callbackUrl" => secure_url("onlyoffice/callback/$fileName"),
+        ],
     ];
+    $config['token'] = JWT::encode($config, $jwtSecret, 'HS256');
 
-    $token = JWT::encode($config, $jwtSecret, 'HS256');
-
-    return view('onlyoffice-editor', compact('documentServerUrl', 'config', 'token'));
+    return view('onlyoffice-editor', compact('documentServerUrl', 'config'));
 });
+
 Route::post('/onlyoffice/callback/{file}', function (Request $request, $file) {
     $data = $request->all();
     if (isset($data['status']) && in_array($data['status'], [2,6]) && !empty($data['url'])) {
-        $savePath = storage_path('app/public/docs/' . basename($file));
+        $savePath = storage_path('app/public/docs/'.basename($file));
         file_put_contents($savePath, file_get_contents($data['url']));
     }
     return response()->json(['error' => 0]);
-})->withoutMiddleware([BaseVerify::class]); // <--
-
+})->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]); // FQN bilan
