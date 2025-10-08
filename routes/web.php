@@ -1,8 +1,8 @@
 <?php
 
 use Firebase\JWT\JWT;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as BaseVerify; // vendor class
 
