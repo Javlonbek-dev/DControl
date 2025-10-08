@@ -53,8 +53,8 @@ Route::get('/edit/{file}', function (Request $request, $file) {
             "mode" => "edit",
             "callbackUrl" => secure_url("api/onlyoffice/callback/{$fileName}"),
             "user" => [
-                "id" => (string)($request->user()->id ?? '0'),
-                "name" => $request->user()->name ?? 'Guest',
+                "id" => (string)(optional($request->user())->id ?? 0),
+                "name" => optional($request->user())->name ?? 'Guest',
             ],
             "customization" => [
                 "autosave" => true,     // videodagi "forcesave" ga o'xshash foydali opsiya
