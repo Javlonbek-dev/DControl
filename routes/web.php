@@ -49,7 +49,7 @@ Route::get('/edit/{file}', function (Request $request, $file) {
             ],
         ],
         "editorConfig" => [
-            "lang" => "uz",
+            "lang" => "en",
             "mode" => "edit",
             "callbackUrl" => secure_url("api/onlyoffice/callback/{$fileName}"),
             "user" => [
