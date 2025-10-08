@@ -1,6 +1,7 @@
 <?php
 
 use Firebase\JWT\JWT;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as BaseVerify; // vendor class
@@ -9,6 +10,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as BaseVerify; // vend
 Route::get('/', function () {
     return redirect('/admin');
 });
+$userId = optional(Auth::user())->id ?? 0;
+$userName = optional(Auth::user())->name ?? 'Guest';
 
 Route::get('/edit/{file}', function (Request $request, $file) {
     $documentServerUrl = rtrim(config('onlyoffice.url', env('ONLYOFFICE_URL')), '/'); // https://dnazorat.uz/oo
