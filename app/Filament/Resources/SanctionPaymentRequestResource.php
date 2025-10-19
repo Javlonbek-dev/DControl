@@ -40,8 +40,7 @@ class SanctionPaymentRequestResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('number')
                     ->required()
-                    ->label('Talabnoma raqami')
-                    ->numeric(),
+                    ->label('Talabnoma raqami'),
                 Forms\Components\DatePicker::make('registration_date')
                     ->required()
                     ->label('Talabnoma registratsiya qilingan sanasi'),
@@ -55,68 +54,68 @@ class SanctionPaymentRequestResource extends Resource
                     ->options(Order::pluck('number', 'id'))
                     ->searchable()
                     ->preload(),
-                Forms\Components\MultiSelect::make('selected_nc_ids')
-                    ->label('Nomuvofiqliklar')
-                    ->options(function (Get $get) {
-                        $orderId = $get('order_id');
-                        if (!$orderId) return [];
-
-                        $byProduct = NonConformity::query()
-                            ->whereHas('product.gov_control', fn($q) => $q->where('order_id', $orderId))
-                            ->with('product:id,name')
-                            ->get()
-                            ->mapWithKeys(fn($nc) => [
-                                $nc->id => ($nc->product?->name ? $nc->product->name . ' ' : '') . "(NC #{$nc->id})",
-                            ])
-                            ->toArray();
-
-                        $byMetrology = NonConformity::query()
-                            ->whereHas('metrology_instrument.gov_control', fn($q) => $q->where('order_id', $orderId))
-                            ->with('metrology_instrument:id,name')
-                            ->get()
-                            ->mapWithKeys(fn($nc) => [
-                                $nc->id => ($nc->metrology_instrument?->name ? $nc->metrology_instrument->name . ' ' : '') . "(NC #{$nc->id})",
-                            ])
-                            ->toArray();
-
-                        $byCertificate = NonConformity::query()
-                            ->whereHas('certificate.gov_control', fn($q) => $q->where('order_id', $orderId))
-                            ->with('certificate:id,name')
-                            ->get()
-                            ->mapWithKeys(fn($nc) => [
-                                $nc->id => ($nc->certificate?->name ? $nc->certificate->name . ' ' : '') . "(NC #{$nc->id})",
-                            ])
-                            ->toArray();
-                        $byServices = NonConformity::query()
-                            ->whereHas('service.gov_control', fn($q) => $q->where('order_id', $orderId))
-                            ->with('service:id,name')
-                            ->get()
-                            ->mapWithKeys(fn($nc) => [
-                                $nc->id => ($nc->service?->name ? $nc->service->name . ' ' : '') . "(NC #{$nc->id})",
-                            ])
-                            ->toArray();
-
-                        return array_filter([
-                            'Mahsulot' => $byProduct,
-                            'O‘lchov vositasi' => $byMetrology,
-                            'Sertifikat' => $byCertificate,
-                            'Xizmatlar' => $byServices
-                        ], fn($arr) => !empty($arr));
-                    })
-                    ->searchable()
-                    ->preload()
-                    ->reactive()
-                    ->dehydrated(false)
-                    ->afterStateHydrated(function ($component, $state, $record) {
-                        if (!$record) return;
-                        $selected = \App\Models\NonConformity::where('sanction_payment_request_id', $record->id)
-                            ->pluck('id')
-                            ->all();
-                        $component->state($selected);
-                    }),
-                Forms\Components\Toggle::make('is_paid')
-                    ->required()
-                    ->label('Jarima to\'langanmi'),
+//                Forms\Components\MultiSelect::make('selected_nc_ids')
+//                    ->label('Nomuvofiqliklar')
+//                    ->options(function (Get $get) {
+//                        $orderId = $get('order_id');
+//                        if (!$orderId) return [];
+//
+//                        $byProduct = NonConformity::query()
+//                            ->whereHas('product.gov_control', fn($q) => $q->where('order_id', $orderId))
+//                            ->with('product:id,name')
+//                            ->get()
+//                            ->mapWithKeys(fn($nc) => [
+//                                $nc->id => ($nc->product?->name ? $nc->product->name . ' ' : '') . "(NC #{$nc->id})",
+//                            ])
+//                            ->toArray();
+//
+//                        $byMetrology = NonConformity::query()
+//                            ->whereHas('metrology_instrument.gov_control', fn($q) => $q->where('order_id', $orderId))
+//                            ->with('metrology_instrument:id,name')
+//                            ->get()
+//                            ->mapWithKeys(fn($nc) => [
+//                                $nc->id => ($nc->metrology_instrument?->name ? $nc->metrology_instrument->name . ' ' : '') . "(NC #{$nc->id})",
+//                            ])
+//                            ->toArray();
+//
+//                        $byCertificate = NonConformity::query()
+//                            ->whereHas('certificate.gov_control', fn($q) => $q->where('order_id', $orderId))
+//                            ->with('certificate:id,name')
+//                            ->get()
+//                            ->mapWithKeys(fn($nc) => [
+//                                $nc->id => ($nc->certificate?->name ? $nc->certificate->name . ' ' : '') . "(NC #{$nc->id})",
+//                            ])
+//                            ->toArray();
+//                        $byServices = NonConformity::query()
+//                            ->whereHas('service.gov_control', fn($q) => $q->where('order_id', $orderId))
+//                            ->with('service:id,name')
+//                            ->get()
+//                            ->mapWithKeys(fn($nc) => [
+//                                $nc->id => ($nc->service?->name ? $nc->service->name . ' ' : '') . "(NC #{$nc->id})",
+//                            ])
+//                            ->toArray();
+//
+//                        return array_filter([
+//                            'Mahsulot' => $byProduct,
+//                            'O‘lchov vositasi' => $byMetrology,
+//                            'Sertifikat' => $byCertificate,
+//                            'Xizmatlar' => $byServices
+//                        ], fn($arr) => !empty($arr));
+//                    })
+//                    ->searchable()
+//                    ->preload()
+//                    ->reactive()
+//                    ->dehydrated(false)
+//                    ->afterStateHydrated(function ($component, $state, $record) {
+//                        if (!$record) return;
+//                        $selected = \App\Models\NonConformity::where('sanction_payment_request_id', $record->id)
+//                            ->pluck('id')
+//                            ->all();
+//                        $component->state($selected);
+//                    }),
+//                Forms\Components\Toggle::make('is_paid')
+//                    ->required()
+//                    ->label('Jarima to\'langanmi'),
             ])->columns(1);
     }
 

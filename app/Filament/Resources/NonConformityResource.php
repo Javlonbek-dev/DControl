@@ -207,14 +207,6 @@ class NonConformityResource extends Resource
                     ->label('Mahsulot nomi')
                     ->sortable()
                     ->wrap(),
-                Tables\Columns\TextColumn::make('metrology_instrument.name')
-                    ->numeric()
-                    ->label('Metralogiya')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('certificate.name')
-                    ->numeric()
-                    ->label('Sertifikat')
-                    ->sortable(),
                 TextColumn::make('service.name')
                     ->searchable()
                     ->wrap()
