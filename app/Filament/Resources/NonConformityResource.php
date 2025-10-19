@@ -45,8 +45,8 @@ class NonConformityResource extends Resource
                         ->dehydrated(false)
                         ->options([
                             'product' => 'Mahsulot',
-                            'metrology' => 'Metrologiya',
-                            'certificate' => 'Sertifikat',
+//                            'metrology' => 'Metrologiya',
+//                            'certificate' => 'Sertifikat',
                             'service' => 'Xizmat',
                         ])
                         ->inline()
@@ -85,9 +85,9 @@ class NonConformityResource extends Resource
                         ->searchable()
                         ->default([]),
 
-                    Forms\Components\Textarea::make('normative_documents')
-                        ->label('Normativ hujjat')
-                        ->columnSpanFull(),
+//                    Forms\Components\Textarea::make('normative_documents')
+//                        ->label('Normativ hujjat')
+//                        ->columnSpanFull(),
                 ])
                 ->columns(1),
 
