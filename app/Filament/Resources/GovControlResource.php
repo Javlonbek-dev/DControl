@@ -67,6 +67,8 @@ class GovControlResource extends Resource
                     ->date('d.m.Y')
                     ->label('Tekshiruvni tugatish sanasi')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('creator.name')
+                    ->label('Kim tomonidan yaratilgan '),
                 Tables\Columns\TextColumn::make('is_finished')
                     ->label('Tekshiruv tugatilganmi')
                     ->badge()

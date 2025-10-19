@@ -24,4 +24,8 @@ class Company extends Model
     {
         return $q->whereIn('is_business', ['0','false']);
     }
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

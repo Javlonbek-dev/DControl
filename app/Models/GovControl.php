@@ -45,4 +45,9 @@ class GovControl extends Model
         ])->flatten(1)->values();
     }
 
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
 }

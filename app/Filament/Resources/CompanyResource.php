@@ -14,9 +14,7 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CompanyResource extends Resource
 {
@@ -100,6 +98,8 @@ class CompanyResource extends Resource
                     ->searchable()
                     ->formatStateUsing(fn ($state) => $state ? 'DN' : 'DT')
                     ->label('Tadbirkorlik subyekt shakli'),
+                Tables\Columns\TextColumn::make('creator.name')
+                    ->label('Kim tomonidan yaratilgan '),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
