@@ -121,9 +121,10 @@ class AdministrativeLiabilityResource extends Resource
                 Forms\Components\DatePicker::make('court_date')
                     ->label('Sudga kiritilgan sanasi'),
                 Forms\Components\TextInput::make('imposed_fine')
-                    ->visible(Filament::auth()->user()->hasRole(['moderator']))
-                    ->label('Jarima miqdori')
-                    ->numeric(),
+                    ->label('Jarima miqdori (so‘m)')
+                    ->numeric()
+                    ->minValue(0)
+                    ->required(),
                 Forms\Components\Toggle::make('is_paid')
                     ->visible(Filament::auth()->user()->hasRole(['moderator']))
                     ->label('To\'langanmi'),
