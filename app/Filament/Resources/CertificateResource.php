@@ -22,6 +22,10 @@ class CertificateResource extends Resource
     protected static ?string $navigationGroup = "Tekshiruv malumotlari";
     protected static ?string $pluralLabel= "Sertifikat";
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
     public static function form(Form $form): Form
     {
         return $form

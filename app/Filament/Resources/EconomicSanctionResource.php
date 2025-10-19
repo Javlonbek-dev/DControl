@@ -340,12 +340,7 @@ class EconomicSanctionResource extends Resource
                             ->success()
                             ->send();
                     }),
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\EditAction::make()
             ]);
     }
 

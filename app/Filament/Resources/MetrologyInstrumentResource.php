@@ -18,10 +18,10 @@ class MetrologyInstrumentResource extends Resource
     protected static ?string $navigationGroup = "Tekshiruv malumotlari";
     protected static ?string $pluralLabel = "O'lchov vositalari";
 
-//    public static function shouldRegisterNavigation(): bool
-//    {
-//        return false;
-//    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function canEdit(Model $record): bool
