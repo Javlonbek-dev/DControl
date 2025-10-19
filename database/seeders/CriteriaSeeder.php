@@ -17,7 +17,12 @@ class CriteriaSeeder extends Seeder
         $criteriaProduct = [
             'Saqlash sharoiti talablari buzilishi',
             'Davriy sinovlar o\'tkazilmaganligi',
-            'Texnik jarayonlar buzilganligi',
+            'Texnologik jarayon',
+            'Sifatsiz',
+            "476-bo'yicha Markirovka",
+            "Markirovka",
+            'Davlat tilida markirovkalanmagan',
+
 
         ];
 
@@ -25,6 +30,10 @@ class CriteriaSeeder extends Seeder
             Criteria::create([
                 'name' => $value,
                 'type' => CriterionType::Product,
+            ]);
+            Criteria::create([
+                'name' => $value,
+                'type' => CriterionType::Service,
             ]);
         }
     }
