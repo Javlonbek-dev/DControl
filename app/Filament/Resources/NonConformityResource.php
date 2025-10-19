@@ -31,10 +31,6 @@ class NonConformityResource extends Resource
 //    }
     protected static ?string $pluralLabel = "Nomuvofiqliklar";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    public static function canEdit(Model $record): bool
-    {
-        return auth()->user()?->hasRole('moderator');
-    }
     public static function canDelete(Model $record): bool
     {
         return auth()->user()?->hasRole('moderator');
