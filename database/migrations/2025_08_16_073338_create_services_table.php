@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('services', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('gov_control_id')->nullable()->constrained('gov_controls');
+            $table->foreignId('gov_control_id')->nullable()->constrained('gov_controls')->nullOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

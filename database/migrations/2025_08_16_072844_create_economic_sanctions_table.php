@@ -19,10 +19,10 @@ return new class extends Migration
             $table->text('court_name')->nullable();
             $table->date('decision_date')->nullable();
             $table->integer('decision_number')->nullable();
-            $table->foreignId('decision_type_id')->nullable()->constrained('decision_types');
+            $table->foreignId('decision_type_id')->nullable()->constrained('decision_types')->nullOnDelete()->cascadeOnUpdate();
             $table->double('imposed_fine')->nullable();
             $table->boolean('is_paid')->nullable();
-            $table->foreignId('sanction_id')->nullable()->constrained('sanction_payment_requests');
+            $table->foreignId('sanction_id')->nullable()->constrained('sanction_payment_requests')->nullOnDelete()->cascadeOnUpdate();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

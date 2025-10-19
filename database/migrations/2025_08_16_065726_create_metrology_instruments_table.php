@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('metrology_instruments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('gov_control_id')->nullable()->constrained('gov_controls');
+            $table->foreignId('gov_control_id')->nullable()->constrained('gov_controls')->nullOnDelete()->cascadeOnUpdate();
             $table->string('name');
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();

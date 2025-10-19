@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('districts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('region_id')->nullable()->constrained('regions');
+            $table->foreignId('region_id')->nullable()->constrained('regions')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

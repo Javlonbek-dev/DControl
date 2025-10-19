@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('non_conformities', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->nullable()->constrained('products');
-            $table->foreignId('metrology_instrument_id')->nullable()->constrained('metrology_instruments');
-            $table->foreignId('certificate_id')->nullable()->constrained('certificates');
-            $table->foreignId('service_id')->nullable()->constrained('services');
+            $table->foreignId('product_id')->nullable()->constrained('products')->nullOnDelete()->cascadeOnUpdate();
+            $table->foreignId('metrology_instrument_id')->nullable()->constrained('metrology_instruments')->nullOnDelete()->cascadeOnUpdate();
+            $table->foreignId('certificate_id')->nullable()->constrained('certificates')->nullOnDelete()->cascadeOnUpdate();
+            $table->foreignId('service_id')->nullable()->constrained('services')->nullOnDelete()->cascadeOnUpdate();
             $table->json('normative_act_id')->nullable();
-            $table->foreignId('written_directive_id')->nullable()->constrained('written_directives');
-            $table->foreignId('administrative_liability_id')->nullable()->constrained('administrative_liabilities');
-            $table->foreignId('economic_sanction_id')->nullable()->constrained('economic_sanctions');
-            $table->foreignId('sanction_payment_request_id')->nullable()->constrained('sanction_payment_requests');
+            $table->foreignId('written_directive_id')->nullable()->constrained('written_directives')->nullOnDelete()->cascadeOnUpdate();
+            $table->foreignId('administrative_liability_id')->nullable()->constrained('administrative_liabilities')->nullOnDelete()->cascadeOnUpdate();
+            $table->foreignId('economic_sanction_id')->nullable()->constrained('economic_sanctions')->nullOnDelete()->cascadeOnUpdate();
+            $table->foreignId('sanction_payment_request_id')->nullable()->constrained('sanction_payment_requests')->nullOnDelete()->cascadeOnUpdate();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->text('normative_documents')->nullable();

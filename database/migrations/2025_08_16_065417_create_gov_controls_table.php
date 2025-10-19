@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('gov_controls', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->nullable()->constrained('orders');
+            $table->foreignId('order_id')->nullable()->constrained('orders')->nullOnDelete()->cascadeOnUpdate();
             $table->date('sign_date')->nullable();
             $table->boolean('is_finished')->default(false);
             $table->date('real_date_to')->nullable();

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('gov_control_id')->nullable()->constrained('gov_controls');
+            $table->foreignId('gov_control_id')->nullable()->constrained('gov_controls')->nullOnDelete()->cascadeOnUpdate();
             $table->string('name');
             $table->string('amount');
             $table->string('price')->nullable();

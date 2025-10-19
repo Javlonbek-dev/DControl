@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sanction_id')->nullable()->constrained('sanction_payment_requests');
-            $table->foreignId('economic_sanction_id')->nullable()->constrained('economic_sanctions');
-            $table->foreignId('administrative_liability_id')->nullable()->constrained('administrative_liabilities');
+            $table->foreignId('sanction_id')->nullable()->constrained('sanction_payment_requests')->nullOnDelete()->cascadeOnUpdate();
+            $table->foreignId('economic_sanction_id')->nullable()->constrained('economic_sanctions')->nullOnDelete()->cascadeOnUpdate();
+            $table->foreignId('administrative_liability_id')->nullable()->constrained('administrative_liabilities')->nullOnDelete()->cascadeOnUpdate();
             $table->date('paid_date')->nullable();
             $table->double('paid_ball')->nullable();
             $table->double('payment_amount')->nullable();
