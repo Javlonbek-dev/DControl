@@ -192,29 +192,29 @@ class RegionalEnforcementTable extends BaseWidget
 //                Tables\Columns\TextColumn::make('decisions')
 //                    ->label('Sud qarorlari')->numeric()->sortable(),
 
-                Tables\Columns\TextColumn::make('imposed_total')
-                    ->label('Jami jarima (so‘m)')
-                    ->formatStateUsing(fn ($state) => number_format((float)$state, 0, '.', ' '))
-                    ->sortable(),
+//                Tables\Columns\TextColumn::make('imposed_total')
+//                    ->label('Jami jarima (so‘m)')
+//                    ->formatStateUsing(fn ($state) => number_format((float)$state, 0, '.', ' '))
+//                    ->sortable(),
+//
+//                Tables\Columns\TextColumn::make('paid_total')
+//                    ->label('Undirilgan (so‘m)')
+//                    ->formatStateUsing(fn ($state) => number_format((float) $state, 0, '.', ' '))
+//                    ->sortable()
+//                    ->color(fn ($record) => ($record->paid_total ?? 0) > 0 ? 'success' : null),
 
-                Tables\Columns\TextColumn::make('paid_total')
-                    ->label('Undirilgan (so‘m)')
-                    ->formatStateUsing(fn ($state) => number_format((float) $state, 0, '.', ' '))
-                    ->sortable()
-                    ->color(fn ($record) => ($record->paid_total ?? 0) > 0 ? 'success' : null),
-
-                Tables\Columns\TextColumn::make('remaining_total')
-                    ->label('Qolgan (so‘m)')
-                    ->getStateUsing(fn ($record) =>
-                    max(0, (float) $record->imposed_total - (float) $record->paid_total)
-                    )
-                    ->formatStateUsing(fn ($state) => number_format((float) $state, 0, '.', ' '))
-                    ->sortable()
-                    ->color(fn ($record) =>
-                    ((float) $record->imposed_total - (float) $record->paid_total) > 0
-                        ? 'warning'
-                        : 'success'
-                    ),
+//                Tables\Columns\TextColumn::make('remaining_total')
+//                    ->label('Qolgan (so‘m)')
+//                    ->getStateUsing(fn ($record) =>
+//                    max(0, (float) $record->imposed_total - (float) $record->paid_total)
+//                    )
+//                    ->formatStateUsing(fn ($state) => number_format((float) $state, 0, '.', ' '))
+//                    ->sortable()
+//                    ->color(fn ($record) =>
+//                    ((float) $record->imposed_total - (float) $record->paid_total) > 0
+//                        ? 'warning'
+//                        : 'success'
+//                    ),
             ])
             ->paginationPageOptions([10, 25, 50])
             ->defaultSort('region_name');

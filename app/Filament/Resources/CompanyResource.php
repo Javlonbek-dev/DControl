@@ -98,8 +98,8 @@ class CompanyResource extends Resource
                     ->searchable()
                     ->formatStateUsing(fn ($state) => $state ? 'DN' : 'DT')
                     ->label('Tadbirkorlik subyekt shakli'),
-                Tables\Columns\TextColumn::make('creator.name')
-                    ->label('Kim tomonidan yaratilgan '),
+//                Tables\Columns\TextColumn::make('creator.name')
+//                    ->label('Kim tomonidan yaratilgan '),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
