@@ -163,8 +163,8 @@ class OrderResource extends Resource
                     ->numeric()
                     ->label('Faoliyat turi')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('creator.name')
-                ->label('Kim tomonidan yaratilgan '),
+//                Tables\Columns\TextColumn::make('creator.name')
+//                ->label('Kim tomonidan yaratilgan '),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
