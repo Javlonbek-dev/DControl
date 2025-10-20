@@ -28,6 +28,10 @@ class EconomicSanctionResource extends Resource
     protected static ?string $pluralLabel = "Moliyaviy Jarima";
 //    protected static ?string $navigationGroup = "Sanksiyaga oid malumotlar";
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
     public static function canEdit(Model $record): bool
     {
         return auth()->user()?->hasRole('moderator');

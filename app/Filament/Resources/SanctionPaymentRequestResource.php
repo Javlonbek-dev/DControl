@@ -22,10 +22,10 @@ class SanctionPaymentRequestResource extends Resource
     protected static ?string $pluralLabel = "Sanksiya To'lov Talabnomasi";
 //    protected static ?string $navigationGroup = "Sanksiyaga oid malumotlar";
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-//    public static function shouldRegisterNavigation(): bool
-//    {
-//        return false;
-//    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
     public static function canEdit(Model $record): bool
     {
         return auth()->user()?->hasRole('moderator');

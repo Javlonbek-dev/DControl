@@ -41,11 +41,15 @@ class PaymentResource extends Resource
     }
     public static function shouldRegisterNavigation(): bool
     {
-        if(auth()->user()?->hasRole('moderator')){
-            return true;
-        }
         return false;
     }
+//    public static function shouldRegisterNavigation(): bool
+//    {
+//        if(auth()->user()?->hasRole('moderator')){
+//            return true;
+//        }
+//        return false;
+//    }
     protected static ?string $navigationGroup = "Sanksiyaga oid malumotlar";
 //    public static function shouldRegisterNavigation(): bool
 //    {
