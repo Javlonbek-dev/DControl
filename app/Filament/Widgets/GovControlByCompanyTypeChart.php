@@ -27,7 +27,7 @@ class GovControlByCompanyTypeChart extends ChartWidget
             ")
             ->first();
 
-        $business = 25;
+        $business = (int) ($row->business_cnt ?? 0);
         $state    = 8;
 
         return [

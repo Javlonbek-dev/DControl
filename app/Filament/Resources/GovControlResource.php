@@ -69,15 +69,15 @@ class GovControlResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('creator.name')
                     ->label('Kim tomonidan yaratilgan '),
-                Tables\Columns\TextColumn::make('is_finished')
-                    ->label('Tekshiruv tugatilganmi')
-                    ->badge()
-                    ->icon(fn($record) => $record->is_finished
-                        ? 'heroicon-o-check-circle'
-                        : 'heroicon-o-x-circle'
-                    )
-                    ->color(fn($record) => $record->is_finished ? 'success' : 'danger')
-                    ->formatStateUsing(fn($state) => $state ? 'Tugatilgan' : 'Tugatilmagan'),
+//                Tables\Columns\TextColumn::make('is_finished')
+//                    ->label('Tekshiruv tugatilganmi')
+//                    ->badge()
+//                    ->icon(fn($record) => $record->is_finished
+//                        ? 'heroicon-o-check-circle'
+//                        : 'heroicon-o-x-circle'
+//                    )
+//                    ->color(fn($record) => $record->is_finished ? 'success' : 'danger')
+//                    ->formatStateUsing(fn($state) => $state ? 'Tugatilgan' : 'Tugatilmagan'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -92,65 +92,65 @@ class GovControlResource extends Resource
             ])
             ->actions([
                 // ✅ Tugatildi
-                Tables\Actions\Action::make('finish')
-                    ->label('Tugatildi')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->visible(fn ($record) =>
-                        ! $record->is_finished &&
-                        $record->created_by === auth()->id() // faqat o‘zi yaratgan
-                    )
-                    ->requiresConfirmation()
-                    ->form([
-                        Forms\Components\DatePicker::make('finished_at')
-                            ->label('Tugatish sanasi')
-                            ->default(now()->toDateString())
-                            ->required(),
-                    ])
-                    ->action(function ($record, array $data) {
-                        $date = !empty($data['finished_at'])
-                            ? Carbon::parse($data['finished_at'])->toDateString()
-                            : now()->toDateString();
+//                Tables\Actions\Action::make('finish')
+//                    ->label('Tugatildi')
+//                    ->icon('heroicon-o-check-circle')
+//                    ->color('success')
+//                    ->visible(fn ($record) =>
+//                        ! $record->is_finished &&
+//                        $record->created_by === auth()->id() // faqat o‘zi yaratgan
+//                    )
+//                    ->requiresConfirmation()
+//                    ->form([
+//                        Forms\Components\DatePicker::make('finished_at')
+//                            ->label('Tugatish sanasi')
+//                            ->default(now()->toDateString())
+//                            ->required(),
+//                    ])
+//                    ->action(function ($record, array $data) {
+//                        $date = !empty($data['finished_at'])
+//                            ? Carbon::parse($data['finished_at'])->toDateString()
+//                            : now()->toDateString();
+//
+//                        // Backend guard — URL orqali chaqirilsa ham to‘xtatadi
+//                        abort_unless($record->created_by === auth()->id(), 403);
+//
+//                        $record->update([
+//                            'is_finished'   => true,
+//                            'real_date_to'  => $date,
+//                            'updated_by'    => auth()->id(),
+//                        ]);
+//
+//                        Notification::make()
+//                            ->title('Tekshiruv tugatildi')
+//                            ->success()
+//                            ->send();
+//                    }),
 
-                        // Backend guard — URL orqali chaqirilsa ham to‘xtatadi
-                        abort_unless($record->created_by === auth()->id(), 403);
-
-                        $record->update([
-                            'is_finished'   => true,
-                            'real_date_to'  => $date,
-                            'updated_by'    => auth()->id(),
-                        ]);
-
-                        Notification::make()
-                            ->title('Tekshiruv tugatildi')
-                            ->success()
-                            ->send();
-                    }),
-
-                // ♻️ Qayta ochish
-                Tables\Actions\Action::make('reopen')
-                    ->label('Qayta ochish')
-                    ->icon('heroicon-o-arrow-path')
-                    ->color('warning')
-                    ->visible(fn ($record) =>
-                        $record->is_finished && auth()->user()?->hasRole('moderator')
-                    )
-                    ->authorize(fn () => auth()->user()?->hasRole('moderator'))
-                    ->requiresConfirmation()
-                    ->action(function ($record) {
-                        abort_unless(auth()->user()?->hasRole('moderator'), 403);
-
-                        $record->update([
-                            'is_finished'  => false,
-                            'real_date_to' => null,
-                            'updated_by'   => auth()->id(),
-                        ]);
-
-                        Notification::make()
-                            ->title('Tekshiruv qayta ochildi')
-                            ->success()
-                            ->send();
-                    }),
+//                // ♻️ Qayta ochish
+//                Tables\Actions\Action::make('reopen')
+//                    ->label('Qayta ochish')
+//                    ->icon('heroicon-o-arrow-path')
+//                    ->color('warning')
+//                    ->visible(fn ($record) =>
+//                        $record->is_finished && auth()->user()?->hasRole('moderator')
+//                    )
+//                    ->authorize(fn () => auth()->user()?->hasRole('moderator'))
+//                    ->requiresConfirmation()
+//                    ->action(function ($record) {
+//                        abort_unless(auth()->user()?->hasRole('moderator'), 403);
+//
+//                        $record->update([
+//                            'is_finished'  => false,
+//                            'real_date_to' => null,
+//                            'updated_by'   => auth()->id(),
+//                        ]);
+//
+//                        Notification::make()
+//                            ->title('Tekshiruv qayta ochildi')
+//                            ->success()
+//                            ->send();
+//                    }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ]);
