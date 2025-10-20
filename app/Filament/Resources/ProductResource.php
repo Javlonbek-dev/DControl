@@ -72,12 +72,12 @@ class ProductResource extends Resource
                     ->searchable()
                     ->wrap()
                     ->label('Mahsulot tavsifi haqida malumot'),
-                Tables\Columns\TextColumn::make('createdBy.name')
-                    ->label('Kim tomonidan yaratilgan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('updatedBy.name')
-                    ->label('Kim tomonidan o\'zgartirilgan')
-                    ->searchable(),
+//                Tables\Columns\TextColumn::make('createdBy.name')
+//                    ->label('Kim tomonidan yaratilgan')
+//                    ->searchable(),
+//                Tables\Columns\TextColumn::make('updatedBy.name')
+//                    ->label('Kim tomonidan o\'zgartirilgan')
+//                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
