@@ -173,12 +173,12 @@ class OrderResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('createdBy.name')
-                    ->label('Kim tomonidan yaratilgan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('updatedBy.name')
-                    ->label('Kim tomonidan o\'zgartirilgan')
-                    ->searchable(),
+//                Tables\Columns\TextColumn::make('createdBy.name')
+//                    ->label('Kim tomonidan yaratilgan')
+//                    ->searchable(),
+//                Tables\Columns\TextColumn::make('updatedBy.name')
+//                    ->label('Kim tomonidan o\'zgartirilgan')
+//                    ->searchable(),
             ])
             ->filters([
                 //
